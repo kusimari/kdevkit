@@ -13,7 +13,16 @@ function printHelp() {
   console.log(`k-mcp-devkit installer
 
 Usage:
-  node install.js --agent <name> [--global]
+  node install.js --agent <name> [--global] [--local]
+
+  # From a GitHub clone or via npx:
+  npx github:kusimari/k-mcp-devkit --agent claude-code
+
+  # From a local clone:
+  node install.js --agent claude-code
+
+  # Install the full local build (no network fetch at runtime):
+  node install.js --agent claude-code --local
 
 Agents:
   claude-code   Claude Code  (.claude/commands/ or ~/.claude/commands/)
@@ -23,17 +32,22 @@ Agents:
 Flags:
   --global      Install at user scope rather than project scope
                 (not supported by all agents)
+  --local       Install the full built command file (commands/dev.md) instead
+                of the default stub. The stub fetches the latest instructions
+                from GitHub Pages at runtime; --local works offline and pins
+                to the version you have checked out.
 
 Examples:
   node install.js --agent claude-code
   node install.js --agent claude-code --global
+  node install.js --agent claude-code --local
   node install.js --agent gemini
   node install.js --agent kiro
 `);
 }
 
 function parseArgs(argv) {
-  const opts = { agent: null, global: false };
+  const opts = { agent: null, global: false, local: false };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--agent') {
@@ -41,6 +55,8 @@ function parseArgs(argv) {
       opts.agent = argv[++i];
     } else if (arg === '--global') {
       opts.global = true;
+    } else if (arg === '--local') {
+      opts.local = true;
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -146,14 +162,27 @@ if (!opts.agent) {
   die('--agent is required.');
 }
 
-const STUB_DIR = path.join(__dirname, 'stub');
-const commandFiles = fs.readdirSync(STUB_DIR)
+// --local installs the full built file; default installs the fetch stub
+const SOURCE_DIR = opts.local
+  ? path.join(__dirname, 'commands')
+  : path.join(__dirname, 'stub');
+
+if (!fs.existsSync(SOURCE_DIR)) {
+  if (opts.local) {
+    die('commands/dev.md not found. Run `node build.js` first to generate the local build.');
+  } else {
+    die(`stub directory not found at ${SOURCE_DIR}`);
+  }
+}
+
+const commandFiles = fs.readdirSync(SOURCE_DIR)
   .filter(f => f.endsWith('.md'))
   .sort()
-  .map(f => ({ name: f, src: path.join(STUB_DIR, f) }));
+  .map(f => ({ name: f, src: path.join(SOURCE_DIR, f) }));
 
-const scope = opts.global ? ' (global)' : '';
-console.log(`Installing for: ${opts.agent}${scope}`);
+const scopeLabel = opts.global ? ' (global)' : '';
+const modeLabel = opts.local ? ' [local build]' : ' [stub → GitHub Pages]';
+console.log(`Installing for: ${opts.agent}${scopeLabel}${modeLabel}`);
 console.log('');
 
 switch (opts.agent) {

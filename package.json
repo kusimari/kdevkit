@@ -5,6 +5,9 @@
   "bin": {
     "k-mcp-devkit": "install.js"
   },
+  "scripts": {
+    "build": "node build.js"
+  },
   "files": [
     "stub/",
     "install.js"

@@ -19,6 +19,7 @@ if [[ $# -eq 0 ]]; then
     "$REPO/tests/install/kiro.sh"
     "$REPO/tests/dev-mode/prompt.sh"
     "$REPO/tests/dev-mode/references.sh"
+    "$REPO/tests/agent/dev-command.sh"
   )
 else
   SUITES=("$@")

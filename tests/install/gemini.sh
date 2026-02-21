@@ -53,4 +53,24 @@ echo "Do not delete this." >> "$TMP2/GEMINI.md"
 assert_file_contains "$TMP2/GEMINI.md" "Existing project notes" "pre-existing GEMINI.md content preserved"
 assert_file_contains "$TMP2/GEMINI.md" "k-mcp-devkit: dev"     "new section appended alongside existing content"
 
+echo ""
+echo "--- install: gemini (--local appends full commands/dev.md content) ---"
+
+TMP_LOCAL="$(mktemp -d)"
+trap 'rm -rf "$TMP_LOCAL"' EXIT
+( cd "$TMP_LOCAL" && HOME="$TMP_LOCAL/home" node "$REPO/install.js" --agent gemini --local ) >/dev/null 2>&1
+
+assert_file_exists "$TMP_LOCAL/GEMINI.md" "GEMINI.md created (--local)"
+assert_file_contains "$TMP_LOCAL/GEMINI.md" "k-mcp-devkit: dev" "GEMINI.md contains dev section heading (--local)"
+
+# Local build should contain actual dev content, not the GitHub Pages fetch instruction
+assert_file_contains "$TMP_LOCAL/GEMINI.md" "Dev Mode" "--local content includes Dev Mode heading"
+
+# Verify it does NOT contain the stub's fetch URL
+if ! grep -qF "kusimari.github.io" "$TMP_LOCAL/GEMINI.md"; then
+  pass "--local install does not contain stub GitHub Pages URL"
+else
+  fail "--local install should not contain the stub fetch URL"
+fi
+
 summary

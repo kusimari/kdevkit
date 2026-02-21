@@ -45,4 +45,25 @@ assert_files_identical \
   "$TMP/.claude/commands/dev.md" \
   "re-install restores stub"
 
+echo ""
+echo "--- install: claude-code (--local installs full commands/dev.md) ---"
+
+TMP_LOCAL="$(mktemp -d)"
+trap 'rm -rf "$TMP_LOCAL"' EXIT
+( cd "$TMP_LOCAL" && HOME="$TMP_LOCAL/home" node "$REPO/install.js" --agent claude-code --local ) >/dev/null 2>&1
+
+assert_dir_exists  "$TMP_LOCAL/.claude/commands"           ".claude/commands/ directory created (--local)"
+assert_file_exists "$TMP_LOCAL/.claude/commands/dev.md"    "dev.md installed (--local)"
+assert_files_identical \
+  "$REPO/commands/dev.md" \
+  "$TMP_LOCAL/.claude/commands/dev.md" \
+  "--local installs full commands/dev.md (not stub)"
+
+# Verify local build is NOT the stub (they should differ)
+if ! diff -q "$REPO/stub/dev.md" "$TMP_LOCAL/.claude/commands/dev.md" >/dev/null 2>&1; then
+  pass "--local install differs from stub (correct)"
+else
+  fail "--local install is identical to stub (should be the full build)"
+fi
+
 summary
