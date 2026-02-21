@@ -1,66 +1,204 @@
-# Feature Setup Interview
+# Feature Setup
 
-When a feature file needs to be created, conduct the following interview with the user.
-Ask each question **one at a time** and wait for the answer before continuing.
-Do not ask all questions at once.
+When a feature file needs to be created, conduct the structured interview process below before writing anything.
+Ask each interview's questions **one at a time** and wait for the answer before continuing.
+Do not ask all questions at once, and do not skip interviews.
 
 ---
 
-## Interview Steps
+## File Location
 
-**1. Name**
-Ask: *"What is a short name or identifier for this feature?"*
-Use the answer as the heading of the feature file.
+Feature files live in `context/` and are named after the feature:
+- Feature name `user-auth` → `context/user-auth.md`
+- Feature name `export-to-csv` → `context/export-to-csv.md`
+- Default (no name given) → `context/feature.md`
 
-**2. Goal**
-Ask: *"What does this feature do, and why is it being built?"*
-A sentence or two is enough. Capture the user's words closely.
+Lowercase, hyphenated, `.md` extension.
 
-**3. Acceptance criteria**
-Ask: *"What does done look like? List the things that must be true for this feature to be considered complete."*
-Prompt the user to be specific. Vague answers like "it works" should be gently pushed back on:
-*"Can you make that more concrete — e.g. a specific behaviour, output, or test that would pass?"*
+---
 
-**4. Constraints**
-Ask: *"Are there hard limits or things that must not change? For example: APIs that cannot break, performance budgets, libraries that cannot be added."*
-If the user says none, record that explicitly.
+## Interview Process
 
-**5. Dependencies**
-Ask: *"Does this feature depend on other features, services, or systems that are in flight or not yet built?"*
-If yes, note them so the agent knows what to watch out for.
+Run all four interviews in order. Each one produces a section of the feature file.
 
-**6. Open questions**
-Ask: *"What do you not yet know that could block or change this feature?"*
-These become action items, not blockers — record them so they can be resolved during the session.
+### 1. Requirements Interview
+
+**Purpose**: Understand what the feature should do, for whom, and how success is measured.
+
+Questions to ask (one at a time):
+1. *"What problem does this feature solve? Who experiences this problem?"*
+2. *"Walk me through how users will interact with this feature."*
+3. *"What specific actions or behaviours must the feature support?"*
+4. *"Are there performance, security, usability, or compatibility requirements?"*
+5. *"How will we know this feature is working correctly and providing value?"*
+6. *"What technical, business, or timeline constraints must we work within?"*
+7. *"What is essential vs nice-to-have? What can be deferred?"*
+
+Push back on vague answers. "It works" is not an acceptance criterion — ask for a specific behaviour, output, or test that would pass.
+
+**Output**: Functional requirements, non-functional requirements, user stories, success criteria, constraints.
+
+### 2. Design Interview
+
+**Purpose**: Define the technical approach, architecture decisions, and design rationale.
+
+Questions to ask (one at a time):
+1. *"How should this feature fit into the existing system architecture?"*
+2. *"What technologies, libraries, or frameworks should we use, and why?"*
+3. *"What data structures, schemas, or storage does this feature need?"*
+4. *"What APIs, UIs, or integration points need to be designed?"*
+5. *"What existing systems, services, or components will this interact with?"*
+6. *"What other approaches did you consider? Why is this one chosen?"*
+7. *"What security considerations apply to this feature?"*
+
+**Output**: Architecture overview, technical decisions, data model, API/interface design, security model, dependencies.
+
+### 3. Testing Interview
+
+**Purpose**: Define how the feature will be validated and verified.
+
+Questions to ask (one at a time):
+1. *"What types of testing are needed — unit, integration, e2e, performance, security?"*
+2. *"What specific scenarios should we test, based on the requirements?"*
+3. *"What error conditions or boundary cases should we handle?"*
+4. *"What should be automated vs tested manually?"*
+5. *"Are there performance benchmarks or load requirements?"*
+6. *"How will we validate that requirements are met?"*
+
+**Output**: Test plan, specific test cases linked to requirements, edge cases, performance criteria, automation strategy.
+
+### 4. Implementation Interview
+
+**Purpose**: Plan the development approach, identify risks, and sequence work.
+
+Questions to ask (one at a time):
+1. *"What's the overall development strategy — incremental, MVP-first, something else?"*
+2. *"How should this feature be divided into development tasks?"*
+3. *"What needs to be finished before other work can start?"*
+4. *"What technical or project risks should we plan for? How do we mitigate them?"*
+5. *"How will this be integrated and deployed with existing systems?"*
+6. *"What logging, metrics, or monitoring should be implemented?"*
+7. *"What documentation needs to be created or updated?"*
+
+**Output**: Development approach, task breakdown with dependencies, risk assessment, integration and deployment plan.
+
+---
+
+## Conducting the Interviews
+
+- Be conversational — ask follow-up questions based on responses
+- Probe for details — do not accept vague answers
+- Challenge assumptions — help the user think through edge cases and alternatives
+- Capture rationale — record not just what was decided, but why
+- Summarise after each interview — repeat back what you heard and confirm before continuing
 
 ---
 
 ## Output Format
 
-After the interview, create the feature file with this structure:
+After completing all four interviews, create the feature file at `context/<feature-name>.md`:
 
 ```markdown
 # <Feature Name>
 
-## Goal
-<what it does and why>
+## How to use this file
+This file contains specifications generated through structured interviews.
+- **Decision record**: captures rationale for future reference
+- **Agent instructions**: provides actionable guidance for implementation
 
-## Acceptance Criteria
-- <specific, testable criterion>
-- <specific, testable criterion>
+Read the entire file before beginning work. Update the Session Log and Decision Log as the work progresses.
 
-## Constraints
-- <hard limit or "none">
+## Feature Brief
+<!-- 2–3 sentence executive summary -->
 
-## Dependencies
-- <other feature/service or "none">
+## Requirements Specification
 
-## Open Questions
-- [ ] <unresolved question>
+### Functional Requirements
+<!-- What the system must do -->
 
-## Progress
-<!-- Updated by the agent throughout the session -->
-- [ ] <first subtask or milestone>
+### Non-Functional Requirements
+<!-- Performance, security, usability, compatibility -->
+
+### User Stories
+<!-- As a [user type], I want [goal] so that [benefit] -->
+
+### Success Criteria
+<!-- Measurable, testable outcomes that indicate success -->
+
+### Constraints
+<!-- Technical, business, or timeline limitations -->
+
+## Technical Design Specification
+
+### Architecture Overview
+<!-- How this feature fits into the existing system -->
+
+### Technical Decisions
+<!-- Technologies chosen and why -->
+
+### Data Model
+<!-- Data structures, schemas, storage -->
+
+### API / Interface Design
+<!-- Endpoints, UIs, integration points -->
+
+### Security Model
+<!-- Security considerations and requirements -->
+
+### Dependencies
+<!-- Systems, services, components this interacts with -->
+
+## Test Strategy Specification
+
+### Test Plan Overview
+<!-- Types of testing and overall strategy -->
+
+### Test Cases
+<!-- Specific scenarios linked to requirements -->
+
+### Edge Cases & Error Handling
+<!-- Boundary conditions and error scenarios -->
+
+### Performance Criteria
+<!-- Benchmarks and load requirements -->
+
+### Automation Strategy
+<!-- What will be automated vs manual -->
+
+## Implementation Plan
+
+### Development Approach
+<!-- Overall strategy and methodology -->
+
+### Task Breakdown
+<!-- Development tasks and descriptions -->
+
+### Dependencies & Sequencing
+<!-- Task dependencies and recommended order -->
+
+### Risk Assessment
+<!-- Identified risks and mitigation strategies -->
+
+### Integration & Deployment
+<!-- How the feature will be released -->
+
+**Status legend:** 📋 Not Started | ⏳ In Progress | ✅ Complete
+
+## Session Log
+<!-- Newest entry at top -->
+
+### <date> — Session focus
+- Achievement
+- Current status
+
+## Decision Log
+
+### <date> — <Decision title>
+**Context**: What led to this decision
+**Decision**: What was decided
+**Rationale**: Why
+**Alternatives**: Other options considered
+**Impact**: Expected effects
 ```
 
 Tell the user where the file was created, then continue to Step 3 of `/dev`.
@@ -69,9 +207,10 @@ Tell the user where the file was created, then continue to Step 3 of `/dev`.
 
 ## Keeping the File Current
 
-Throughout the session, update the **Progress** section as work advances:
-- Mark completed items with `[x]`
-- Add new subtasks as they emerge
-- Move resolved open questions out of Open Questions and into Notes if useful context should be preserved
+Throughout the session:
+- Update **Implementation Plan** task statuses as work progresses
+- Add entries to **Session Log** after each meaningful unit of work
+- Record decisions in **Decision Log** — especially choices not covered in the specification
+- Regularly validate implementation against the **Success Criteria**
 
-When the user says the feature is complete, mark all done items and prompt the project context update as described in `commands/dev.md`.
+When the feature is complete, prompt the project context update as described in `commands/dev.md`.

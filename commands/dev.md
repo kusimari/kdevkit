@@ -19,12 +19,14 @@ Read `context/project.md` from the project root.
 ## Step 2 — Feature context
 
 Determine the feature file to load:
-- If an argument was passed (`$ARGUMENTS`), use that path as the feature file.
-- Otherwise, use `context/feature.md`.
+- If an argument was passed (`$ARGUMENTS`), derive the path: `context/<argument>.md`
+  (lowercase the argument and replace spaces with hyphens — e.g. `user auth` → `context/user-auth.md`).
+- Otherwise, ask: *"Which feature are you working on? Provide a short name."*
+  Use the answer the same way: `context/<name>.md`.
 
 Then:
 - **File has content** → load it silently; note what is currently being built.
-- **File is missing or empty** → run the feature setup interview defined in `practices/feature-setup.md` to create it.
+- **File is missing or empty** → run the full interview process defined in `practices/feature-setup.md` to create it.
   Do not continue to Step 3 until the file exists with real content.
 
 ## Step 3 — Git practices
