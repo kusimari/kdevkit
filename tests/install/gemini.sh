@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Tests: gemini install
-# Verifies that install.js --agent gemini appends the right content to GEMINI.md
+# Verifies that install.js --agent gemini appends the stub content to GEMINI.md
 # and is idempotent on repeat installs.
 
 set -euo pipefail
@@ -17,10 +17,8 @@ echo "--- install: gemini (project scope) ---"
 assert_file_exists "$TMP/GEMINI.md" "GEMINI.md created"
 assert_file_contains "$TMP/GEMINI.md" "k-mcp-devkit: dev" "GEMINI.md contains k-mcp-devkit dev section heading"
 
-# Content of commands/dev.md should appear in GEMINI.md
-# Check a distinctive phrase from the source file
-SAMPLE="$(head -3 "$REPO/commands/dev.md" | tail -1)"
-assert_file_contains "$TMP/GEMINI.md" "$SAMPLE" "GEMINI.md contains content from commands/dev.md"
+# Stub content (GitHub Pages URL) should appear in GEMINI.md
+assert_file_contains "$TMP/GEMINI.md" "kusimari.github.io/k-mcp-devkit" "GEMINI.md contains GitHub Pages URL from stub"
 
 echo ""
 echo "--- install: gemini (idempotent — no duplicate sections on re-install) ---"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Tests: kiro install
-# Verifies that install.js --agent kiro puts steering files in .kiro/steering/.
+# Verifies that install.js --agent kiro puts the stub in .kiro/steering/.
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -16,9 +16,9 @@ echo "--- install: kiro (project scope) ---"
 assert_dir_exists  "$TMP/.kiro/steering"           ".kiro/steering/ directory created"
 assert_file_exists "$TMP/.kiro/steering/dev.md"    "dev.md installed to .kiro/steering/"
 assert_files_identical \
-  "$REPO/commands/dev.md" \
+  "$REPO/stub/dev.md" \
   "$TMP/.kiro/steering/dev.md" \
-  "installed dev.md matches source"
+  "installed dev.md matches stub"
 
 echo ""
 echo "--- install: kiro (--global warns but installs at project scope) ---"
@@ -40,8 +40,8 @@ echo "--- install: kiro (idempotent — re-install overwrites cleanly) ---"
 echo "corrupted" > "$TMP/.kiro/steering/dev.md"
 ( cd "$TMP" && node "$REPO/install.js" --agent kiro ) >/dev/null 2>&1
 assert_files_identical \
-  "$REPO/commands/dev.md" \
+  "$REPO/stub/dev.md" \
   "$TMP/.kiro/steering/dev.md" \
-  "re-install restores dev.md to match source"
+  "re-install restores stub"
 
 summary

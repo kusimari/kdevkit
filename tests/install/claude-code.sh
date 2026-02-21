@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Tests: claude-code install
-# Verifies that install.js --agent claude-code puts the right files in the right places.
+# Verifies that install.js --agent claude-code puts the stub in the right places.
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -17,9 +17,9 @@ echo "--- install: claude-code (project scope) ---"
 assert_dir_exists  "$TMP/.claude/commands"           ".claude/commands/ directory created"
 assert_file_exists "$TMP/.claude/commands/dev.md"    "dev.md installed to .claude/commands/"
 assert_files_identical \
-  "$REPO/commands/dev.md" \
+  "$REPO/stub/dev.md" \
   "$TMP/.claude/commands/dev.md" \
-  "installed dev.md matches source"
+  "installed dev.md matches stub"
 
 echo ""
 echo "--- install: claude-code (global scope, HOME isolated) ---"
@@ -30,9 +30,9 @@ FAKE_HOME="$TMP/home"
 assert_dir_exists  "$FAKE_HOME/.claude/commands"        "~/.claude/commands/ directory created"
 assert_file_exists "$FAKE_HOME/.claude/commands/dev.md" "dev.md installed globally"
 assert_files_identical \
-  "$REPO/commands/dev.md" \
+  "$REPO/stub/dev.md" \
   "$FAKE_HOME/.claude/commands/dev.md" \
-  "globally installed dev.md matches source"
+  "globally installed dev.md matches stub"
 
 echo ""
 echo "--- install: claude-code (idempotent — re-install overwrites cleanly) ---"
@@ -41,8 +41,8 @@ echo "--- install: claude-code (idempotent — re-install overwrites cleanly) --
 echo "corrupted" > "$TMP/.claude/commands/dev.md"
 ( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" --agent claude-code ) >/dev/null 2>&1
 assert_files_identical \
-  "$REPO/commands/dev.md" \
+  "$REPO/stub/dev.md" \
   "$TMP/.claude/commands/dev.md" \
-  "re-install restores dev.md to match source"
+  "re-install restores stub"
 
 summary

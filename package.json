@@ -6,7 +6,7 @@
     "k-mcp-devkit": "install.js"
   },
   "files": [
-    "commands/",
+    "stub/",
     "install.js"
   ],
   "engines": {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Tests: referenced files exist and dev.md contains required content
-# All practices content must be present inline in commands/dev.md so that
-# the command is self-contained after installation.
+# Tests: referenced files exist and content is correct
+# - stub/dev.md must exist and point to the GitHub Pages URL
+# - commands/dev.md must contain all inlined practices (it is the GitHub Pages source)
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -16,6 +16,17 @@ assert_file_exists "$REPO/context/feature.md"  "context/feature.md exists"
 # Practice files still exist in repo as source material
 assert_file_exists "$REPO/practices/git.md"           "practices/git.md exists"
 assert_file_exists "$REPO/practices/feature-setup.md" "practices/feature-setup.md exists"
+
+# Stub and full command file both present
+assert_file_exists "$REPO/stub/dev.md"     "stub/dev.md exists"
+assert_file_exists "$REPO/commands/dev.md" "commands/dev.md exists"
+
+echo ""
+echo "--- dev-mode: stub points to GitHub Pages ---"
+
+STUB="$REPO/stub/dev.md"
+assert_file_contains "$STUB" "kusimari.github.io/k-mcp-devkit" "stub references GitHub Pages URL"
+assert_file_contains "$STUB" "dev.md"                          "stub references dev.md on GitHub Pages"
 
 echo ""
 echo "--- dev-mode: commands/dev.md contains feature-setup interview structure ---"

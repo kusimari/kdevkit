@@ -146,11 +146,11 @@ if (!opts.agent) {
   die('--agent is required.');
 }
 
-const COMMANDS_DIR = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(COMMANDS_DIR)
+const STUB_DIR = path.join(__dirname, 'stub');
+const commandFiles = fs.readdirSync(STUB_DIR)
   .filter(f => f.endsWith('.md'))
   .sort()
-  .map(f => ({ name: f, src: path.join(COMMANDS_DIR, f) }));
+  .map(f => ({ name: f, src: path.join(STUB_DIR, f) }));
 
 const scope = opts.global ? ' (global)' : '';
 console.log(`Installing for: ${opts.agent}${scope}`);
