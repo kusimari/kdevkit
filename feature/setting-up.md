@@ -28,8 +28,9 @@ A single command prompt (`commands/dev.md`) acts as an orchestrator. When invoke
 it instructs the agent to:
 
 1. Load (or interactively create) `context/project.md`
-2. Load (or interactively create) `context/feature.md`
-3. Read and apply all files in `practices/`
+2. Load (or interactively create) the feature file — either the path passed as an argument or `context/feature.md` by default. New feature files are populated via a structured interview (`practices/feature-setup.md`)
+3. Apply `practices/git.md`
+4. Keep the feature file updated throughout the session; when the feature is marked complete, prompt to update `context/project.md`
 
 Everything stays inside the project root — no writes to global paths.
 
@@ -43,14 +44,13 @@ expects to find slash commands.
 ```
 k-mcp-devkit/
 ├── commands/
-│   └── dev.md                 # /dev — orchestrator slash command
+│   └── dev.md                 # /dev [path/to/feature.md] — orchestrator slash command
 ├── context/
 │   ├── project.md             # what is this project (created/loaded by /dev)
-│   └── feature.md             # what are we building now (created/loaded by /dev)
+│   └── feature.md             # default feature context
 ├── practices/
 │   ├── git.md                 # branch naming, commit format, PR rules
-│   ├── code.md                # code quality expectations
-│   └── communication.md       # interaction style for this session
+│   └── feature-setup.md       # interview steps for creating a new feature file
 ├── agents/
 │   ├── claude-code.sh         # installs to .claude/commands/
 │   ├── gemini.sh              # appends to GEMINI.md
@@ -72,12 +72,14 @@ Install the slash command for your agent:
 ./install.sh --agent kiro
 ```
 
-Then in your agent, invoke `/dev`.
+Then in your agent, invoke `/dev` or `/dev path/to/feature.md`.
 
 The agent will:
-- Load `context/project.md` and `context/feature.md` if they have content
-- Ask you to fill them in if they are empty
-- Apply `practices/git.md`, `practices/code.md`, `practices/communication.md`
+- Load `context/project.md`; create it via a one-question prompt if empty
+- Load the feature file (from the path argument, or `context/feature.md` by default); run the `practices/feature-setup.md` interview to create it if empty
+- Apply `practices/git.md`
+- Keep the feature file updated throughout the session
+- Prompt to update `context/project.md` when the feature is marked complete
 - Confirm context and practices are loaded, then wait for your first instruction
 
 ---
@@ -104,12 +106,11 @@ The agent will:
 
 ## Checklist
 
-- [x] `commands/dev.md` — orchestrator slash command
+- [x] `commands/dev.md` — orchestrator slash command with `$ARGUMENTS` for feature path
 - [x] `context/project.md` — project context stub
-- [x] `context/feature.md` — feature context stub
+- [x] `context/feature.md` — default feature context stub
 - [x] `practices/git.md`
-- [x] `practices/code.md`
-- [x] `practices/communication.md`
+- [x] `practices/feature-setup.md` — feature interview steps
 - [x] `agents/claude-code.sh`
 - [x] `agents/gemini.sh`
 - [x] `agents/kiro.sh`
