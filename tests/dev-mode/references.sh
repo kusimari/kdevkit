@@ -22,13 +22,29 @@ echo "--- dev-mode: feature-setup.md interview structure ---"
 
 FS="$REPO/practices/feature-setup.md"
 
-assert_file_contains "$FS" "Name"                "interview includes Name step"
-assert_file_contains "$FS" "Goal"                "interview includes Goal step"
-assert_file_contains "$FS" "Acceptance"          "interview includes Acceptance Criteria step"
-assert_file_contains "$FS" "Constraint"          "interview includes Constraints step"
-assert_file_contains "$FS" "Dependenc"           "interview includes Dependencies step"
-assert_file_contains "$FS" "Open Question"       "interview includes Open Questions step"
-assert_file_contains "$FS" "Progress"            "interview output format includes Progress section"
+# Four interview sections
+assert_file_contains "$FS" "Requirements Interview"    "feature-setup.md includes Requirements Interview"
+assert_file_contains "$FS" "Design Interview"          "feature-setup.md includes Design Interview"
+assert_file_contains "$FS" "Testing Interview"         "feature-setup.md includes Testing Interview"
+assert_file_contains "$FS" "Implementation Interview"  "feature-setup.md includes Implementation Interview"
+
+# Git setup section
+assert_file_contains "$FS" "Git Setup"           "feature-setup.md includes Git Setup section"
+assert_file_contains "$FS" "worktree add"        "git setup includes worktree command"
+assert_file_contains "$FS" "checkout -b"         "git setup includes branch command"
+assert_file_contains "$FS" "commit-ish"          "git setup references commit-ish base"
+
+# Template sections present
+assert_file_contains "$FS" "Feature Brief"                "template includes Feature Brief"
+assert_file_contains "$FS" "Requirements Specification"   "template includes Requirements Specification"
+assert_file_contains "$FS" "Technical Design"             "template includes Technical Design section"
+assert_file_contains "$FS" "Test Strategy"                "template includes Test Strategy section"
+assert_file_contains "$FS" "Session Log"                  "template includes Session Log"
+assert_file_contains "$FS" "Decision Log"                 "template includes Decision Log"
+
+# Content still present
+assert_file_contains "$FS" "Constraint"          "interview covers Constraints"
+assert_file_contains "$FS" "Dependenc"           "interview covers Dependencies"
 assert_file_contains "$FS" "one at a time"       "interview specifies asking one question at a time"
 
 echo ""
