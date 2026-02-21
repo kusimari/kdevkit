@@ -17,6 +17,45 @@ Lowercase, hyphenated, `.md` extension.
 
 ---
 
+## Git Setup
+
+Before starting the interviews, ask the user about their git setup. Do this once, in order.
+
+**Step 1 — Working style**
+
+Ask: *"Do you want to work on a branch or a worktree?"*
+
+- **Branch** — a feature branch checked out in the current repository.
+- **Worktree** — a separate directory so you can work in parallel without switching branches.
+
+**Step 2 — Base commit**
+
+Ask: *"What should the branch start from?"* (e.g. `main`, `develop`, a commit hash, a tag).
+If the user is unsure, suggest `main`.
+
+**Step 3 — Show the command and confirm**
+
+Derive the commands from the feature name and commit-ish, then **show the exact command** to the user before running anything:
+
+- Branch:
+  ```
+  git checkout -b <feature-name> <commit-ish>
+  ```
+- Worktree (directory named after the feature, branch named the same):
+  ```
+  git worktree add <feature-name> -b <feature-name> <commit-ish>
+  ```
+
+Ask: *"Shall I run this now?"* Wait for explicit confirmation before executing.
+
+If the branch already exists, tell the user and skip creation — just check it out (branch) or verify the worktree is already added (worktree).
+
+**Step 4 — Record in the feature file**
+
+After the git setup is confirmed or skipped, note the choice in the feature file under `## Git Setup` (see template below).
+
+---
+
 ## Interview Process
 
 Run all four interviews in order. Each one produces a section of the feature file.
@@ -107,6 +146,9 @@ This file contains specifications generated through structured interviews.
 - **Agent instructions**: provides actionable guidance for implementation
 
 Read the entire file before beginning work. Update the Session Log and Decision Log as the work progresses.
+
+## Git Setup
+<!-- Branch or worktree, base commit-ish, and the command that was run -->
 
 ## Feature Brief
 <!-- 2–3 sentence executive summary -->
