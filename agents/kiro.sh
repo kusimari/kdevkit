@@ -37,7 +37,7 @@ for src in "$COMMANDS_DIR"/*.md; do
   dest="$TARGET_DIR/$name"
   cp "$src" "$dest"
   echo "  installed: $dest"
-  (( install_count++ ))
+  install_count=$(( install_count + 1 ))
 done
 
 echo ""

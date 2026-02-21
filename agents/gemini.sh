@@ -46,7 +46,7 @@ for src in "$COMMANDS_DIR"/*.md; do
       cat "$src"
     } >> "$TARGET_FILE"
     echo "  appended: $name → $TARGET_FILE"
-    (( install_count++ ))
+    install_count=$(( install_count + 1 ))
   fi
 done
 
