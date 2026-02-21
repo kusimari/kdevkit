@@ -1,36 +1,51 @@
-You are now in **dev mode**. Apply the following conventions for all work in this session unless explicitly told otherwise.
+# /dev — Enter Dev Mode
+
+Work through the steps below **in order** before responding to anything else.
 
 ---
 
-## Workflow
+## Step 1 — Project context
 
-- Read files before editing them — understand before changing
-- Make small, focused changes; one concern per commit
-- Before taking any irreversible or high-blast-radius action (deleting branches, force-pushing, dropping data, sending messages), state what you are about to do and confirm
-- Surface blockers and ambiguities early; don't silently make assumptions
+Read `context/project.md` from the project root.
 
-## Git
+- **File has content** → load it silently; note what the project is in your internal context.
+- **File is missing or empty** → ask exactly one question:
+  *"Briefly describe this project — purpose, tech stack, and any hard constraints."*
+  Wait for the answer, then create `context/project.md` using the template in that file.
+  Do not continue to Step 2 until the file exists with real content.
 
-- Branch naming: `<type>/<short-description>` — type is one of `feat | fix | chore | docs | refactor | test`
-- Commit format: Conventional Commits — `type(scope): subject` (imperative mood, lowercase, no trailing period)
-- Each commit should leave the repo in a working state
-- PR body should explain *why*, not just *what*
+## Step 2 — Feature context
 
-## Code
+Read `context/feature.md` from the project root.
 
-- Prefer explicit and readable over clever and compact
-- No commented-out code in commits — delete it or keep it, don't comment it
-- Remove dead code rather than leaving it behind
-- Only add error handling, fallbacks, or validation at real system boundaries (user input, external APIs) — don't defend against internal invariants
-- Don't add docstrings, comments, or type annotations to code you didn't change
+- **File has content** → load it silently; note what is currently being built.
+- **File is missing or empty** → ask exactly one question:
+  *"What feature or task are we working on right now?"*
+  Wait for the answer, then create or update `context/feature.md` using the template in that file.
+  Do not continue to Step 3 until the file exists with real content.
 
-## Communication
+## Step 3 — Dev practices
 
-- Be concise — favour code and bullets over prose
-- When referencing code, include `file:line` to aid navigation
-- If requirements are ambiguous, ask one focused question rather than listing all possibilities
-- No filler phrases ("Great!", "Certainly!", "Of course!")
+Read and apply each of the following files for the full duration of this session:
+
+- `practices/git.md`
+- `practices/code.md`
+- `practices/communication.md`
+
+These files live in the project root alongside this command. If any are missing, skip that section and note it in your confirmation.
+
+## Step 4 — Confirm
+
+Reply with a compact summary:
+
+```
+Project:   <one sentence from context/project.md>
+Feature:   <one sentence from context/feature.md>
+Practices: git, code, communication loaded
+```
+
+Then stop and wait for the first instruction.
 
 ---
 
-*This prompt is managed by [k-mcp-devkit](https://github.com/kusimari/k-mcp-devkit). Edit `commands/dev.md` to customise.*
+*Managed by [k-mcp-devkit](https://github.com/kusimari/k-mcp-devkit). Context lives in `context/`. Practices live in `practices/`.*
