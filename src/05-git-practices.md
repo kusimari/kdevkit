@@ -1,6 +1,10 @@
-# Git Practices
+---
 
-## Branches
+## Step 3 — Git practices
+
+Apply these git conventions for the full duration of this session:
+
+### Branches
 
 Pattern: `<type>/<short-description>`
 
@@ -11,7 +15,7 @@ Examples:
 - `fix/null-pointer-on-login`
 - `chore/update-deps`
 
-## Commits
+### Commits
 
 Format: Conventional Commits — `type(scope): subject`
 
@@ -26,20 +30,20 @@ Examples:
 - `fix(api): handle empty response from upstream`
 - `chore: bump Node to 22`
 
-## Scope
+### Scope
 
 - Commits and config changes stay **local to this project** — never modify global git config
 - Do not write to `~/.gitconfig`, `~/.ssh/`, or any path outside the project root
 - If a git hook or script tries to write outside the project, flag it before running
 
-## Pull Requests
+### Pull Requests
 
 - PR title follows the same `type(scope): subject` format
 - PR body: explain *why* the change is needed and what approach was chosen
 - Keep PRs small; one concern per PR
 - Squash merge; the squash commit message must match the PR title format
 
-## Hygiene
+### Hygiene
 
 - Do not commit commented-out code, debug prints, or temporary test files
 - Do not commit secrets, credentials, or environment-specific values

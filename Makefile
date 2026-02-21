@@ -1,4 +1,7 @@
-.PHONY: test test-install test-dev-mode install-claude install-gemini install-kiro
+.PHONY: build test test-install test-dev-mode install-claude install-claude-global install-gemini install-kiro
+
+build:
+	node build.js
 
 test:
 	bash tests/run.sh
