@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Tests: referenced files exist
-# Every file that commands/dev.md or practices/feature-setup.md points to must exist
-# in the repo so agents can read them after /dev is invoked.
+# Tests: referenced files exist and dev.md contains required content
+# All practices content must be present inline in commands/dev.md so that
+# the command is self-contained after installation.
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -13,63 +13,57 @@ echo "--- dev-mode: referenced files exist ---"
 assert_file_exists "$REPO/context/project.md"  "context/project.md exists"
 assert_file_exists "$REPO/context/feature.md"  "context/feature.md exists"
 
-# Practice files
+# Practice files still exist in repo as source material
 assert_file_exists "$REPO/practices/git.md"           "practices/git.md exists"
 assert_file_exists "$REPO/practices/feature-setup.md" "practices/feature-setup.md exists"
 
 echo ""
-echo "--- dev-mode: feature-setup.md interview structure ---"
+echo "--- dev-mode: commands/dev.md contains feature-setup interview structure ---"
 
-FS="$REPO/practices/feature-setup.md"
+DEV="$REPO/commands/dev.md"
 
-# Four interview sections
-assert_file_contains "$FS" "Requirements Interview"    "feature-setup.md includes Requirements Interview"
-assert_file_contains "$FS" "Design Interview"          "feature-setup.md includes Design Interview"
-assert_file_contains "$FS" "Testing Interview"         "feature-setup.md includes Testing Interview"
-assert_file_contains "$FS" "Implementation Interview"  "feature-setup.md includes Implementation Interview"
+# Four interview sections inlined into dev.md
+assert_file_contains "$DEV" "Requirements Interview"    "dev.md includes Requirements Interview"
+assert_file_contains "$DEV" "Design Interview"          "dev.md includes Design Interview"
+assert_file_contains "$DEV" "Testing Interview"         "dev.md includes Testing Interview"
+assert_file_contains "$DEV" "Implementation Interview"  "dev.md includes Implementation Interview"
 
-# Git setup section
-assert_file_contains "$FS" "Git Setup"           "feature-setup.md includes Git Setup section"
-assert_file_contains "$FS" "worktree add"        "git setup includes worktree command"
-assert_file_contains "$FS" "checkout -b"         "git setup includes branch command"
-assert_file_contains "$FS" "commit-ish"          "git setup references commit-ish base"
+# Git setup section inlined into dev.md
+assert_file_contains "$DEV" "Git Setup"           "dev.md includes Git Setup section"
+assert_file_contains "$DEV" "worktree add"        "git setup includes worktree command"
+assert_file_contains "$DEV" "checkout -b"         "git setup includes branch command"
+assert_file_contains "$DEV" "commit-ish"          "dev.md references commit-ish base"
 
-# Template sections present
-assert_file_contains "$FS" "Feature Brief"                "template includes Feature Brief"
-assert_file_contains "$FS" "Requirements Specification"   "template includes Requirements Specification"
-assert_file_contains "$FS" "Technical Design"             "template includes Technical Design section"
-assert_file_contains "$FS" "Test Strategy"                "template includes Test Strategy section"
-assert_file_contains "$FS" "Session Log"                  "template includes Session Log"
-assert_file_contains "$FS" "Decision Log"                 "template includes Decision Log"
+# Feature file template sections inlined into dev.md
+assert_file_contains "$DEV" "Feature Brief"                "dev.md template includes Feature Brief"
+assert_file_contains "$DEV" "Requirements Specification"   "dev.md template includes Requirements Specification"
+assert_file_contains "$DEV" "Technical Design"             "dev.md template includes Technical Design section"
+assert_file_contains "$DEV" "Test Strategy"                "dev.md template includes Test Strategy section"
+assert_file_contains "$DEV" "Session Log"                  "dev.md template includes Session Log"
+assert_file_contains "$DEV" "Decision Log"                 "dev.md template includes Decision Log"
 
-# Content still present
-assert_file_contains "$FS" "Constraint"          "interview covers Constraints"
-assert_file_contains "$FS" "Dependenc"           "interview covers Dependencies"
-assert_file_contains "$FS" "one at a time"       "interview specifies asking one question at a time"
-
-echo ""
-echo "--- dev-mode: practices/git.md content ---"
-
-GIT="$REPO/practices/git.md"
-
-assert_file_contains "$GIT" "feat"               "git.md covers feat branch type"
-assert_file_contains "$GIT" "fix"                "git.md covers fix branch type"
-assert_file_contains "$GIT" "Conventional"       "git.md references Conventional Commits"
-assert_file_contains "$GIT" "global"             "git.md contains global config restriction"
+# Interview content present
+assert_file_contains "$DEV" "Constraint"          "interview covers Constraints"
+assert_file_contains "$DEV" "Dependenc"           "interview covers Dependencies"
+assert_file_contains "$DEV" "one at a time"       "interview specifies asking one question at a time"
 
 echo ""
-echo "--- dev-mode: agent scripts exist ---"
+echo "--- dev-mode: commands/dev.md contains git practices ---"
 
-assert_file_exists "$REPO/agents/claude-code.sh" "agents/claude-code.sh exists"
-assert_file_exists "$REPO/agents/gemini.sh"      "agents/gemini.sh exists"
-assert_file_exists "$REPO/agents/kiro.sh"        "agents/kiro.sh exists"
+assert_file_contains "$DEV" "feat"               "dev.md covers feat branch type"
+assert_file_contains "$DEV" "fix"                "dev.md covers fix branch type"
+assert_file_contains "$DEV" "Conventional"       "dev.md references Conventional Commits"
+assert_file_contains "$DEV" "global"             "dev.md contains global config restriction"
 
-for script in "$REPO/agents/"*.sh "$REPO/install.sh"; do
-  if [[ -x "$script" ]]; then
-    pass "$(basename "$script") is executable"
-  else
-    fail "$(basename "$script") is not executable"
-  fi
-done
+echo ""
+echo "--- dev-mode: installer exists ---"
+
+assert_file_exists "$REPO/install.js" "install.js exists"
+
+if [[ -x "$REPO/install.js" ]]; then
+  pass "install.js is executable"
+else
+  fail "install.js is not executable"
+fi
 
 summary

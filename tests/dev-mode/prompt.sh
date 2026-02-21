@@ -27,8 +27,13 @@ assert_file_contains "$DEV" "Step 5" "Step 5 (confirm) present"
 # Feature file paths referenced
 assert_file_contains "$DEV" "context/project.md"      "references context/project.md"
 assert_file_contains "$DEV" 'context/<argument>.md'   "resolves feature path as context/<argument>.md"
-assert_file_contains "$DEV" "practices/git.md"         "references practices/git.md"
-assert_file_contains "$DEV" "practices/feature-setup.md" "references practices/feature-setup.md"
+
+# Git practices content is inlined (check for key phrases rather than file references)
+assert_file_contains "$DEV" "Conventional Commits"    "git practices: Conventional Commits present"
+assert_file_contains "$DEV" "feat"                    "git practices: feat type present"
+
+# Feature setup content is inlined (check for key interview section)
+assert_file_contains "$DEV" "Requirements Interview"  "feature setup: Requirements Interview present"
 
 # Feature completion trigger
 assert_file_contains "$DEV" "context/project.md" \

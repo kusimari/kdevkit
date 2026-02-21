@@ -1,0 +1,20 @@
+{
+  "name": "k-mcp-devkit",
+  "version": "1.0.0",
+  "description": "MCP for dev practices and sundry",
+  "bin": {
+    "k-mcp-devkit": "install.js"
+  },
+  "files": [
+    "commands/",
+    "install.js"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kusimari/k-mcp-devkit.git"
+  }
+}
