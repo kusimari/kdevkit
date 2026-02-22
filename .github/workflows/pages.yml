@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'src/**'
+      - 'install.js'
+      - 'build.js'
   workflow_dispatch:
 
 permissions:

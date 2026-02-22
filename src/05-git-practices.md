@@ -43,6 +43,20 @@ Examples:
 - Keep PRs small; one concern per PR
 - Squash merge; the squash commit message must match the PR title format
 
+### Commit discipline
+
+- **Commits are save points** — commit whenever a coherent unit of work is done; do not wait until the whole feature is complete
+- Every commit must leave the repo in a working state (tests pass, build succeeds)
+- Push to the feature branch freely; pushing is not the same as opening a PR
+
+### PR gate
+
+A PR is ready when, and only when, **`npm run build` passes locally** (or the project's equivalent build-and-test command). Do not open a PR if the build is broken or tests are red.
+
+- Run the full build+test suite immediately before opening a PR
+- If CI is configured, it runs only on protected branches (e.g. `main`) — feature branches are the developer's responsibility
+- CI triggers only on changes to source and build files, not test-only changes
+
 ### Hygiene
 
 - Do not commit commented-out code, debug prints, or temporary test files
