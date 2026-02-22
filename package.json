@@ -6,7 +6,16 @@
     "k-mcp-devkit": "./install.js"
   },
   "scripts": {
-    "build": "node build.js && bash tests/run.sh"
+    "build": "node build.js",
+    "test": "bash tests/run.sh",
+    "test:install": "bash tests/run.sh tests/install/claude-code.sh tests/install/gemini.sh tests/install/kiro.sh",
+    "test:dev": "bash tests/run.sh tests/dev-mode/prompt.sh tests/dev-mode/references.sh",
+    "test:agent": "bash tests/run.sh tests/agent/dev-command.sh",
+    "install:claude": "node install.js claude-code --local",
+    "install:claude:global": "node install.js claude-code --global --local",
+    "install:gemini": "node install.js gemini --local",
+    "install:gemini:global": "node install.js gemini --global --local",
+    "install:kiro": "node install.js kiro --local"
   },
   "files": [
     "install.js"

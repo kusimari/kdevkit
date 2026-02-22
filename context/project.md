@@ -25,13 +25,15 @@ k-mcp-devkit provides dev practices as a slash command for coding agents (Claude
 | `build/` | Generated output (gitignored); `build/dev.md` is what gets published and installed |
 | `install.js` | Installer — fetches `dev.md` from GitHub Pages (default) or reads `build/dev.md` (`--local`) |
 | `build.js` | Build script — `src/*.md` → `build/dev.md` |
-| `tests/` | Test suites — run automatically as part of `npm run build` |
+| `tests/` | Test suites — run via `npm test` |
 | `context/` | Project and feature context files maintained by `/dev` mode |
 
 ## Development Workflow
 
-- **Build + test**: `npm run build` (runs `node build.js` then `bash tests/run.sh`)
+- **Build**: `npm run build` — generates `build/dev.md` from `src/`
+- **Test**: `npm test` — all suites; subsets via `npm run test:install`, `test:dev`, `test:agent`
+- **Install locally**: `npm run install:claude` / `install:gemini` / `install:kiro` (uses `--local`)
+- **PR gate**: `npm run build && npm test` must pass locally before opening a PR
 - **Commits** are save points — commit often on the feature branch; don't wait for the full feature
-- **PR** when `npm run build` passes locally — that is the only gate
 - **CI** runs only on push to `main`, triggered only by changes to `src/`, `install.js`, or `build.js`
 - Never push directly to `main`; always merge via PR
