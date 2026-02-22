@@ -2,25 +2,23 @@
 
 Dev practices as a slash command for Claude Code, Gemini CLI, and Amazon Kiro.
 
-The installer drops a tiny stub into your agent's config directory. When you run `/dev`, the agent fetches the latest instructions from GitHub Pages — so your practices stay up to date without reinstalling.
+The full dev instructions are embedded in the installer and written directly into your agent's config — works offline, no network fetch required at runtime.
 
 ---
 
 ## Install from GitHub (no clone needed)
 
 ```sh
-npx github:kusimari/k-mcp-devkit --agent claude-code
+npx github:kusimari/k-mcp-devkit claude-code
+npx github:kusimari/k-mcp-devkit gemini
+npx github:kusimari/k-mcp-devkit kiro
 ```
 
-Replace `claude-code` with `gemini` or `kiro` for other agents.
+Add `--global` to install at user scope instead of project scope (Claude Code and Gemini only):
 
-### Options
-
-| Flag | Effect |
-|------|--------|
-| _(none)_ | Install stub — fetches latest instructions from GitHub Pages at runtime |
-| `--local` | Install full built file (offline, pins to the version you have checked out) |
-| `--global` | Install at user scope instead of project scope (Claude Code and Gemini only) |
+```sh
+npx github:kusimari/k-mcp-devkit claude-code --global
+```
 
 ---
 
@@ -29,50 +27,22 @@ Replace `claude-code` with `gemini` or `kiro` for other agents.
 ```sh
 git clone https://github.com/kusimari/k-mcp-devkit.git
 cd k-mcp-devkit
-node install.js --agent claude-code
-```
-
-To install for all three agents at once:
-
-```sh
-node install.js --agent claude-code
-node install.js --agent gemini
-node install.js --agent kiro
-```
-
----
-
-## Install the local build (offline / pin version)
-
-First build `commands/dev.md` from the source files in `src/`:
-
-```sh
-npm run build
-# or
-node build.js
-```
-
-Then install using the local build:
-
-```sh
-node install.js --agent claude-code --local
-node install.js --agent gemini --local
-node install.js --agent kiro --local
+node build/install.js claude-code
+node build/install.js gemini
+node build/install.js kiro
 ```
 
 ---
 
 ## Manual install (no command needed)
 
-Copy the appropriate file directly into your agent's config:
+Copy `build/dev.md` from a local clone directly into your agent's config:
 
-| Agent | File to copy | Destination |
-|-------|-------------|-------------|
-| Claude Code | `stub/dev.md` | `.claude/commands/dev.md` (project) or `~/.claude/commands/dev.md` (global) |
-| Gemini CLI | `stub/dev.md` | Append under `## k-mcp-devkit: dev` heading in `GEMINI.md` |
-| Amazon Kiro | `stub/dev.md` | `.kiro/steering/dev.md` |
-
-Use `commands/dev.md` instead of `stub/dev.md` if you want the full offline version.
+| Agent | Destination |
+|-------|-------------|
+| Claude Code | `.claude/commands/dev.md` (project) or `~/.claude/commands/dev.md` (global) |
+| Gemini CLI | Append under `## k-mcp-devkit: dev` heading in `GEMINI.md` |
+| Amazon Kiro | `.kiro/steering/dev.md` |
 
 ---
 
@@ -98,8 +68,8 @@ The steering file is always active. Ask Kiro to enter dev mode or reference the 
 
 ```sh
 # Edit source files in src/
-# Build combined commands/dev.md:
-npm run build
+# Build build/dev.md and build/install.js:
+npm run build    # or: node build.js
 
 # Run all tests:
 make test
@@ -109,6 +79,11 @@ make test-install
 
 # Run agent integration test:
 make test-agent
+
+# Install into the current project after building:
+make install-claude
+make install-gemini
+make install-kiro
 ```
 
-Source files are in `src/` (numbered for sort order). `build.js` concatenates them into `commands/dev.md`, which is published to [GitHub Pages](https://kusimari.github.io/k-mcp-devkit/dev.md) on every push to `main`.
+Source files are in `src/` (numbered for sort order). `build.js` concatenates them into `build/dev.md` and generates a self-contained `build/install.js` with the content embedded. Both artifacts are committed so `npx github:kusimari/k-mcp-devkit` works without a separate build step.

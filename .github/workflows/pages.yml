@@ -35,7 +35,7 @@ jobs:
       - name: Prepare public directory
         run: |
           mkdir -p public
-          cp commands/dev.md public/dev.md
+          cp build/dev.md public/dev.md
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

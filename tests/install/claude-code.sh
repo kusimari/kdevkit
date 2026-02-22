@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Tests: claude-code install
-# Verifies that install.js --agent claude-code puts the stub in the right places.
+# Verifies that build/install.js claude-code puts dev.md in the right places.
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -11,59 +11,48 @@ trap 'rm -rf "$TMP"' EXIT
 
 echo "--- install: claude-code (project scope) ---"
 
-# Run install in a fresh temp project directory
-( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" --agent claude-code ) >/dev/null 2>&1
+( cd "$TMP" && HOME="$TMP/home" node "$REPO/build/install.js" claude-code ) >/dev/null 2>&1
 
 assert_dir_exists  "$TMP/.claude/commands"           ".claude/commands/ directory created"
 assert_file_exists "$TMP/.claude/commands/dev.md"    "dev.md installed to .claude/commands/"
 assert_files_identical \
-  "$REPO/stub/dev.md" \
+  "$REPO/build/dev.md" \
   "$TMP/.claude/commands/dev.md" \
-  "installed dev.md matches stub"
+  "installed dev.md matches build/dev.md"
 
 echo ""
 echo "--- install: claude-code (global scope, HOME isolated) ---"
 
 FAKE_HOME="$TMP/home"
-( cd "$TMP" && HOME="$FAKE_HOME" node "$REPO/install.js" --agent claude-code --global ) >/dev/null 2>&1
+( cd "$TMP" && HOME="$FAKE_HOME" node "$REPO/build/install.js" claude-code --global ) >/dev/null 2>&1
 
 assert_dir_exists  "$FAKE_HOME/.claude/commands"        "~/.claude/commands/ directory created"
 assert_file_exists "$FAKE_HOME/.claude/commands/dev.md" "dev.md installed globally"
 assert_files_identical \
-  "$REPO/stub/dev.md" \
+  "$REPO/build/dev.md" \
   "$FAKE_HOME/.claude/commands/dev.md" \
-  "globally installed dev.md matches stub"
+  "globally installed dev.md matches build/dev.md"
 
 echo ""
 echo "--- install: claude-code (idempotent — re-install overwrites cleanly) ---"
 
-# Modify the installed file, re-install, and check it was restored
 echo "corrupted" > "$TMP/.claude/commands/dev.md"
-( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" --agent claude-code ) >/dev/null 2>&1
+( cd "$TMP" && HOME="$TMP/home" node "$REPO/build/install.js" claude-code ) >/dev/null 2>&1
 assert_files_identical \
-  "$REPO/stub/dev.md" \
+  "$REPO/build/dev.md" \
   "$TMP/.claude/commands/dev.md" \
-  "re-install restores stub"
+  "re-install restores build/dev.md"
 
 echo ""
-echo "--- install: claude-code (--local installs full commands/dev.md) ---"
+echo "--- install: claude-code (--agent flag form also works) ---"
 
-TMP_LOCAL="$(mktemp -d)"
-trap 'rm -rf "$TMP_LOCAL"' EXIT
-( cd "$TMP_LOCAL" && HOME="$TMP_LOCAL/home" node "$REPO/install.js" --agent claude-code --local ) >/dev/null 2>&1
-
-assert_dir_exists  "$TMP_LOCAL/.claude/commands"           ".claude/commands/ directory created (--local)"
-assert_file_exists "$TMP_LOCAL/.claude/commands/dev.md"    "dev.md installed (--local)"
+TMP2="$(mktemp -d)"
+trap 'rm -rf "$TMP2"' EXIT
+( cd "$TMP2" && HOME="$TMP2/home" node "$REPO/build/install.js" --agent claude-code ) >/dev/null 2>&1
+assert_file_exists "$TMP2/.claude/commands/dev.md" "dev.md installed via --agent flag"
 assert_files_identical \
-  "$REPO/commands/dev.md" \
-  "$TMP_LOCAL/.claude/commands/dev.md" \
-  "--local installs full commands/dev.md (not stub)"
-
-# Verify local build is NOT the stub (they should differ)
-if ! diff -q "$REPO/stub/dev.md" "$TMP_LOCAL/.claude/commands/dev.md" >/dev/null 2>&1; then
-  pass "--local install differs from stub (correct)"
-else
-  fail "--local install is identical to stub (should be the full build)"
-fi
+  "$REPO/build/dev.md" \
+  "$TMP2/.claude/commands/dev.md" \
+  "--agent flag produces same result as positional arg"
 
 summary

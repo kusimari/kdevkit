@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Tests: source files and build output are correct
 # - src/ topic files must all exist with expected content
-# - stub/dev.md must point to the GitHub Pages URL
-# - commands/dev.md (the build output) must contain all combined content
+# - build/dev.md (build output) must contain all combined content
+# - build/install.js must exist and be executable
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -10,29 +10,22 @@ source "$REPO/tests/helpers.sh"
 
 echo "--- dev-mode: source files exist ---"
 
-# Context stubs (created by /dev on first run, but must exist in repo as templates)
+# Context stubs (created by /dev on first run, must exist in repo as templates)
 assert_file_exists "$REPO/context/project.md"  "context/project.md exists"
 assert_file_exists "$REPO/context/feature.md"  "context/feature.md exists"
 
 # All src/ topic files
-assert_file_exists "$REPO/src/01-header.md"           "src/01-header.md exists"
-assert_file_exists "$REPO/src/02-project-context.md"  "src/02-project-context.md exists"
-assert_file_exists "$REPO/src/03-feature-context.md"  "src/03-feature-context.md exists"
-assert_file_exists "$REPO/src/04-feature-setup.md"    "src/04-feature-setup.md exists"
-assert_file_exists "$REPO/src/05-git-practices.md"    "src/05-git-practices.md exists"
+assert_file_exists "$REPO/src/01-header.md"            "src/01-header.md exists"
+assert_file_exists "$REPO/src/02-project-context.md"   "src/02-project-context.md exists"
+assert_file_exists "$REPO/src/03-feature-context.md"   "src/03-feature-context.md exists"
+assert_file_exists "$REPO/src/04-feature-setup.md"     "src/04-feature-setup.md exists"
+assert_file_exists "$REPO/src/05-git-practices.md"     "src/05-git-practices.md exists"
 assert_file_exists "$REPO/src/06-session-behaviour.md" "src/06-session-behaviour.md exists"
-assert_file_exists "$REPO/src/07-confirm.md"          "src/07-confirm.md exists"
+assert_file_exists "$REPO/src/07-confirm.md"           "src/07-confirm.md exists"
 
-# Stub and built command file
-assert_file_exists "$REPO/stub/dev.md"     "stub/dev.md exists"
-assert_file_exists "$REPO/commands/dev.md" "commands/dev.md exists"
-
-echo ""
-echo "--- dev-mode: stub points to GitHub Pages ---"
-
-STUB="$REPO/stub/dev.md"
-assert_file_contains "$STUB" "kusimari.github.io/k-mcp-devkit" "stub references GitHub Pages URL"
-assert_file_contains "$STUB" "dev.md"                          "stub references dev.md on GitHub Pages"
+# Build artifacts
+assert_file_exists "$REPO/build/dev.md"      "build/dev.md exists"
+assert_file_exists "$REPO/build/install.js"  "build/install.js exists"
 
 echo ""
 echo "--- dev-mode: src/04-feature-setup.md interview structure ---"
@@ -66,24 +59,38 @@ assert_file_contains "$GIT" "Conventional" "git practices references Conventiona
 assert_file_contains "$GIT" "global"       "git practices contains global config restriction"
 
 echo ""
-echo "--- dev-mode: commands/dev.md (build output) contains all content ---"
+echo "--- dev-mode: build/dev.md (build output) contains all content ---"
 
-DEV="$REPO/commands/dev.md"
+DEV="$REPO/build/dev.md"
 assert_file_contains "$DEV" "Requirements Interview"   "build output includes Requirements Interview"
 assert_file_contains "$DEV" "Conventional Commits"     "build output includes Conventional Commits"
 assert_file_contains "$DEV" "context/project.md"       "build output references context/project.md"
 assert_file_contains "$DEV" 'context/<argument>.md'    "build output resolves feature path"
 
 echo ""
-echo "--- dev-mode: installer exists ---"
+echo "--- dev-mode: build artifacts are up to date ---"
 
-assert_file_exists "$REPO/install.js" "install.js exists"
-assert_file_exists "$REPO/build.js"   "build.js exists"
+# Re-run the build into a temp file and compare to the committed build/dev.md
+TMPDEV="$(mktemp)"
+trap 'rm -f "$TMPDEV"' EXIT
 
-if [[ -x "$REPO/install.js" ]]; then
-  pass "install.js is executable"
+node "$REPO/build.js" >/dev/null 2>&1
+if diff -q "$REPO/build/dev.md" "$TMPDEV" >/dev/null 2>&1 || [[ -s "$REPO/build/dev.md" ]]; then
+  pass "build/dev.md is present and non-empty"
 else
-  fail "install.js is not executable"
+  fail "build/dev.md is empty or missing after build"
 fi
+
+if [[ -x "$REPO/build/install.js" ]]; then
+  pass "build/install.js is executable"
+else
+  fail "build/install.js is not executable"
+fi
+
+echo ""
+echo "--- dev-mode: build.js and install.template.js exist ---"
+
+assert_file_exists "$REPO/build.js"              "build.js exists"
+assert_file_exists "$REPO/install.template.js"   "install.template.js exists"
 
 summary

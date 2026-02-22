@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Tests: agent integration — /dev command via local install
+# Tests: agent integration — /dev command via build/install.js
 #
-# Part 1: Install test
-#   Creates a dummy project, runs node install.js --agent claude-code --local,
-#   and verifies the installed file is the full built commands/dev.md.
+# Part 1: Install test (3 dummy projects, one per agent)
+#   For each agent: create a dummy project, run build/install.js <agent>,
+#   verify the correct file structure was created with the full dev.md content.
 #
 # Part 2: Agent invocation test (requires claude CLI + CLAUDE_API_KEY)
-#   Invokes the claude CLI with the /dev command and verifies it creates
+#   Installs dev command for claude-code into a dummy project, then invokes
+#   the claude CLI with the dev instructions and verifies it creates
 #   context/project.md and a context/<feature>.md file.
 
 set -euo pipefail
@@ -14,30 +15,46 @@ REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 source "$REPO/tests/helpers.sh"
 
 # ---------------------------------------------------------------------------
-# Part 1: install verification in a dummy project
+# Part 1: install into three dummy projects
 # ---------------------------------------------------------------------------
 
-echo "--- agent/dev-command: install into dummy project (--local) ---"
+echo "--- agent/dev-command: install into dummy project (claude-code) ---"
 
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+TMP_CC="$(mktemp -d)"
+trap 'rm -rf "$TMP_CC"' EXIT
+( cd "$TMP_CC" && HOME="$TMP_CC/home" node "$REPO/build/install.js" claude-code ) >/dev/null 2>&1
 
-# Install local build into the dummy project
-( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" --agent claude-code --local ) >/dev/null 2>&1
-
-assert_dir_exists  "$TMP/.claude/commands"           ".claude/commands/ created in dummy project"
-assert_file_exists "$TMP/.claude/commands/dev.md"    "dev.md installed into dummy project"
+assert_dir_exists  "$TMP_CC/.claude/commands"           ".claude/commands/ created"
+assert_file_exists "$TMP_CC/.claude/commands/dev.md"    "dev.md installed for claude-code"
 assert_files_identical \
-  "$REPO/commands/dev.md" \
-  "$TMP/.claude/commands/dev.md" \
-  "installed file matches local build (commands/dev.md)"
+  "$REPO/build/dev.md" \
+  "$TMP_CC/.claude/commands/dev.md" \
+  "claude-code: installed file matches build/dev.md"
 
-# Sanity: installed file is NOT the stub
-if ! diff -q "$REPO/stub/dev.md" "$TMP/.claude/commands/dev.md" >/dev/null 2>&1; then
-  pass "installed file is the full build, not the stub"
-else
-  fail "installed file is identical to stub — --local had no effect"
-fi
+echo ""
+echo "--- agent/dev-command: install into dummy project (gemini) ---"
+
+TMP_GEM="$(mktemp -d)"
+trap 'rm -rf "$TMP_GEM"' EXIT
+( cd "$TMP_GEM" && HOME="$TMP_GEM/home" node "$REPO/build/install.js" gemini ) >/dev/null 2>&1
+
+assert_file_exists "$TMP_GEM/GEMINI.md" "GEMINI.md created for gemini"
+assert_file_contains "$TMP_GEM/GEMINI.md" "k-mcp-devkit: dev" "GEMINI.md contains dev section heading"
+assert_file_contains "$TMP_GEM/GEMINI.md" "Requirements Interview" "GEMINI.md contains full dev content"
+
+echo ""
+echo "--- agent/dev-command: install into dummy project (kiro) ---"
+
+TMP_KI="$(mktemp -d)"
+trap 'rm -rf "$TMP_KI"' EXIT
+( cd "$TMP_KI" && node "$REPO/build/install.js" kiro ) >/dev/null 2>&1
+
+assert_dir_exists  "$TMP_KI/.kiro/steering"           ".kiro/steering/ created"
+assert_file_exists "$TMP_KI/.kiro/steering/dev.md"    "dev.md installed for kiro"
+assert_files_identical \
+  "$REPO/build/dev.md" \
+  "$TMP_KI/.kiro/steering/dev.md" \
+  "kiro: installed file matches build/dev.md"
 
 # ---------------------------------------------------------------------------
 # Part 2: agent invocation (skipped unless claude CLI + API key are present)
@@ -58,36 +75,25 @@ if [[ -z "${CLAUDE_API_KEY:-}" && -z "${ANTHROPIC_API_KEY:-}" ]]; then
   exit 0
 fi
 
-# Create a minimal project context so the agent can skip the interview
-mkdir -p "$TMP/context"
-cat > "$TMP/context/project.md" <<'EOF'
+# Create a minimal project context so the agent can skip the project interview
+mkdir -p "$TMP_CC/context"
+cat > "$TMP_CC/context/project.md" <<'EOF'
 Test project used by k-mcp-devkit integration tests. Node.js. No hard constraints.
 EOF
 
-FEATURE_FILE="$TMP/context/ci-test.md"
-
-# Invoke claude with the /dev command and a feature name argument.
-# We use --output-format text and pipe /dev to stdin as a prompt.
-# Claude Code's /dev command is a slash command; when invoked non-interactively
-# we pass it as a plain prompt so the model processes the instructions.
-DEV_CONTENT="$(cat "$TMP/.claude/commands/dev.md")"
-
-PROMPT="$(cat <<EOF
-${DEV_CONTENT}
-
-The feature argument is: ci-test
-EOF
-)"
+# Pass the full dev.md content as the prompt, with a feature name argument
+DEV_CONTENT="$(cat "$TMP_CC/.claude/commands/dev.md")"
+PROMPT="$(printf '%s\n\nThe feature argument is: ci-test' "$DEV_CONTENT")"
 
 echo "  Invoking claude CLI (this may take a moment)..."
-OUTPUT="$(cd "$TMP" && claude --output-format text -p "$PROMPT" 2>&1)" || true
+OUTPUT="$(cd "$TMP_CC" && claude --output-format text -p "$PROMPT" 2>&1)" || true
 
 # The agent should have created context/ci-test.md after following Step 2
+FEATURE_FILE="$TMP_CC/context/ci-test.md"
 if [[ -f "$FEATURE_FILE" ]]; then
   pass "context/ci-test.md created by agent"
 else
-  # Some runs create the file with a slightly different name; check broadly
-  FOUND="$(find "$TMP/context" -name "*.md" ! -name "project.md" 2>/dev/null | head -1)"
+  FOUND="$(find "$TMP_CC/context" -name "*.md" ! -name "project.md" 2>/dev/null | head -1)"
   if [[ -n "$FOUND" ]]; then
     pass "context feature file created: $(basename "$FOUND")"
   else
@@ -96,7 +102,7 @@ else
   fi
 fi
 
-# project.md should still be present (not deleted by the agent)
-assert_file_exists "$TMP/context/project.md" "context/project.md preserved after agent run"
+# project.md should still be present
+assert_file_exists "$TMP_CC/context/project.md" "context/project.md preserved after agent run"
 
 summary

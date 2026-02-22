@@ -1,9 +1,9 @@
 .PHONY: build test test-install test-dev-mode test-agent \
-        install-claude install-claude-global install-claude-local \
-        install-gemini install-gemini-local \
-        install-kiro install-kiro-local
+        install-claude install-claude-global \
+        install-gemini install-gemini-global \
+        install-kiro
 
-# Build commands/dev.md from src/ source files
+# Build build/dev.md and build/install.js from src/ source files
 build:
 	node build.js
 
@@ -20,25 +20,18 @@ test-dev-mode:
 test-agent:
 	bash tests/run.sh tests/agent/dev-command.sh
 
-# Install stub (fetches latest from GitHub Pages at runtime)
+# Install into the current project (run `make build` first if src/ changed)
 install-claude:
-	node install.js --agent claude-code
+	node build/install.js claude-code
 
 install-claude-global:
-	node install.js --agent claude-code --global
+	node build/install.js claude-code --global
 
 install-gemini:
-	node install.js --agent gemini
+	node build/install.js gemini
+
+install-gemini-global:
+	node build/install.js gemini --global
 
 install-kiro:
-	node install.js --agent kiro
-
-# Install local build (offline, pins to current commands/dev.md)
-install-claude-local:
-	node install.js --agent claude-code --local
-
-install-gemini-local:
-	node install.js --agent gemini --local
-
-install-kiro-local:
-	node install.js --agent kiro --local
+	node build/install.js kiro

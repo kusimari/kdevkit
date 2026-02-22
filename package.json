@@ -1,16 +1,15 @@
 {
   "name": "k-mcp-devkit",
   "version": "1.0.0",
-  "description": "MCP for dev practices and sundry",
+  "description": "Dev practices as a slash command for Claude Code, Gemini CLI, and Amazon Kiro",
   "bin": {
-    "k-mcp-devkit": "install.js"
+    "k-mcp-devkit": "./build/install.js"
   },
   "scripts": {
     "build": "node build.js"
   },
   "files": [
-    "stub/",
-    "install.js"
+    "build/"
   ],
   "engines": {
     "node": ">=18"
