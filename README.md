@@ -2,7 +2,7 @@
 
 Dev practices as a slash command for Claude Code, Gemini CLI, and Amazon Kiro.
 
-The full dev instructions are embedded in the installer and written directly into your agent's config — works offline, no network fetch required at runtime.
+The installer fetches the latest `dev.md` from GitHub Pages and writes it into your agent's config. The GitHub repo holds source only; the published app lives on Pages.
 
 ---
 
@@ -27,16 +27,17 @@ npx github:kusimari/k-mcp-devkit claude-code --global
 ```sh
 git clone https://github.com/kusimari/k-mcp-devkit.git
 cd k-mcp-devkit
-node build/install.js claude-code
-node build/install.js gemini
-node build/install.js kiro
+npm run build            # builds build/dev.md and runs tests
+node install.js claude-code --local   # installs from local build
+node install.js gemini --local
+node install.js kiro --local
 ```
 
 ---
 
 ## Manual install (no command needed)
 
-Copy `build/dev.md` from a local clone directly into your agent's config:
+After `npm run build`, copy `build/dev.md` directly into your agent's config:
 
 | Agent | Destination |
 |-------|-------------|
@@ -68,22 +69,21 @@ The steering file is always active. Ask Kiro to enter dev mode or reference the 
 
 ```sh
 # Edit source files in src/
-# Build build/dev.md and build/install.js:
-npm run build    # or: node build.js
+# Build build/dev.md and run all tests:
+npm run build
 
-# Run all tests:
+# Run tests only (requires build/dev.md to exist):
 make test
 
-# Run only install tests:
+# Run subsets:
 make test-install
-
-# Run agent integration test:
+make test-dev-mode
 make test-agent
 
-# Install into the current project after building:
+# Install into the current project from local build:
 make install-claude
 make install-gemini
 make install-kiro
 ```
 
-Source files are in `src/` (numbered for sort order). `build.js` concatenates them into `build/dev.md` and generates a self-contained `build/install.js` with the content embedded. Both artifacts are committed so `npx github:kusimari/k-mcp-devkit` works without a separate build step.
+**Source** lives in `src/` (numbered for sort order). `build.js` concatenates them into `build/dev.md`. On push to `main`, CI runs `npm run build` and publishes `build/dev.md` + `install.js` to GitHub Pages. The `build/` directory is gitignored.

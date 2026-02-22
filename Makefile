@@ -3,11 +3,11 @@
         install-gemini install-gemini-global \
         install-kiro
 
-# Build build/dev.md and build/install.js from src/ source files
+# Build build/dev.md from src/ and run all tests
 build:
-	node build.js
+	npm run build
 
-# Run all test suites
+# Run all test suites (requires build/dev.md — run 'make build' first)
 test:
 	bash tests/run.sh
 
@@ -20,18 +20,18 @@ test-dev-mode:
 test-agent:
 	bash tests/run.sh tests/agent/dev-command.sh
 
-# Install into the current project (run `make build` first if src/ changed)
+# Install into the current project using local build (requires 'make build' first)
 install-claude:
-	node build/install.js claude-code
+	node install.js claude-code --local
 
 install-claude-global:
-	node build/install.js claude-code --global
+	node install.js claude-code --global --local
 
 install-gemini:
-	node build/install.js gemini
+	node install.js gemini --local
 
 install-gemini-global:
-	node build/install.js gemini --global
+	node install.js gemini --global --local
 
 install-kiro:
-	node build/install.js kiro
+	node install.js kiro --local

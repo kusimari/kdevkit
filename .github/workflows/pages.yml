@@ -29,13 +29,14 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Build command file
-        run: node build.js
+      - name: Build and test
+        run: npm run build
 
       - name: Prepare public directory
         run: |
           mkdir -p public
           cp build/dev.md public/dev.md
+          cp install.js public/install.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

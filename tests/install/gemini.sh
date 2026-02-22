@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Tests: gemini install
-# Verifies that build/install.js gemini appends the dev content to GEMINI.md idempotently.
+# Uses --local so tests run against build/dev.md without needing network.
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -9,18 +9,19 @@ source "$REPO/tests/helpers.sh"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-echo "--- install: gemini (project scope) ---"
+echo "--- install: gemini (project scope, --local) ---"
 
-( cd "$TMP" && HOME="$TMP/home" node "$REPO/build/install.js" gemini ) >/dev/null 2>&1
+( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
 assert_file_exists "$TMP/GEMINI.md" "GEMINI.md created"
-assert_file_contains "$TMP/GEMINI.md" "k-mcp-devkit: dev" "GEMINI.md contains k-mcp-devkit dev section heading"
+assert_file_contains "$TMP/GEMINI.md" "k-mcp-devkit: dev" "GEMINI.md contains section heading"
 assert_file_contains "$TMP/GEMINI.md" "/dev" "GEMINI.md contains /dev command reference"
+assert_file_contains "$TMP/GEMINI.md" "Requirements Interview" "GEMINI.md contains full dev content"
 
 echo ""
 echo "--- install: gemini (idempotent — no duplicate sections on re-install) ---"
 
-( cd "$TMP" && HOME="$TMP/home" node "$REPO/build/install.js" gemini ) >/dev/null 2>&1
+( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
 COUNT="$(grep -cF "k-mcp-devkit: dev" "$TMP/GEMINI.md")"
 if [[ "$COUNT" -eq 1 ]]; then
@@ -30,10 +31,10 @@ else
 fi
 
 echo ""
-echo "--- install: gemini (global scope, HOME isolated) ---"
+echo "--- install: gemini (global scope, --local) ---"
 
 FAKE_HOME="$TMP/home"
-( cd "$TMP" && HOME="$FAKE_HOME" node "$REPO/build/install.js" gemini --global ) >/dev/null 2>&1
+( cd "$TMP" && HOME="$FAKE_HOME" node "$REPO/install.js" gemini --local --global ) >/dev/null 2>&1
 
 assert_file_exists "$FAKE_HOME/.gemini/GEMINI.md" "~/.gemini/GEMINI.md created"
 assert_file_contains "$FAKE_HOME/.gemini/GEMINI.md" "k-mcp-devkit: dev" "global GEMINI.md contains dev section"
@@ -45,19 +46,9 @@ TMP2="$(mktemp -d)"
 trap 'rm -rf "$TMP2"' EXIT
 echo "# Existing project notes" > "$TMP2/GEMINI.md"
 echo "Do not delete this." >> "$TMP2/GEMINI.md"
-( cd "$TMP2" && HOME="$TMP2/home" node "$REPO/build/install.js" gemini ) >/dev/null 2>&1
+( cd "$TMP2" && HOME="$TMP2/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
-assert_file_contains "$TMP2/GEMINI.md" "Existing project notes" "pre-existing GEMINI.md content preserved"
-assert_file_contains "$TMP2/GEMINI.md" "k-mcp-devkit: dev"     "new section appended alongside existing content"
-
-echo ""
-echo "--- install: gemini (content matches build/dev.md) ---"
-
-TMP3="$(mktemp -d)"
-trap 'rm -rf "$TMP3"' EXIT
-( cd "$TMP3" && HOME="$TMP3/home" node "$REPO/build/install.js" gemini ) >/dev/null 2>&1
-
-assert_file_contains "$TMP3/GEMINI.md" "Requirements Interview"  "GEMINI.md includes Requirements Interview content"
-assert_file_contains "$TMP3/GEMINI.md" "Conventional Commits"    "GEMINI.md includes git practices content"
+assert_file_contains "$TMP2/GEMINI.md" "Existing project notes" "pre-existing content preserved"
+assert_file_contains "$TMP2/GEMINI.md" "k-mcp-devkit: dev"     "new section appended"
 
 summary

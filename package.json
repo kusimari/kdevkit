@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "Dev practices as a slash command for Claude Code, Gemini CLI, and Amazon Kiro",
   "bin": {
-    "k-mcp-devkit": "./build/install.js"
+    "k-mcp-devkit": "./install.js"
   },
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js && bash tests/run.sh"
   },
   "files": [
-    "build/"
+    "install.js"
   ],
   "engines": {
     "node": ">=18"

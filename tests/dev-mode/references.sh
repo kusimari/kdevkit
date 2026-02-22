@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Tests: source files and build output are correct
-# - src/ topic files must all exist with expected content
-# - build/dev.md (build output) must contain all combined content
-# - build/install.js must exist and be executable
+# Requires build/dev.md to exist — run 'npm run build' (or 'make build') first.
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -10,7 +8,7 @@ source "$REPO/tests/helpers.sh"
 
 echo "--- dev-mode: source files exist ---"
 
-# Context stubs (created by /dev on first run, must exist in repo as templates)
+# Context templates (committed so /dev has something to read on first run)
 assert_file_exists "$REPO/context/project.md"  "context/project.md exists"
 assert_file_exists "$REPO/context/feature.md"  "context/feature.md exists"
 
@@ -23,9 +21,15 @@ assert_file_exists "$REPO/src/05-git-practices.md"     "src/05-git-practices.md 
 assert_file_exists "$REPO/src/06-session-behaviour.md" "src/06-session-behaviour.md exists"
 assert_file_exists "$REPO/src/07-confirm.md"           "src/07-confirm.md exists"
 
-# Build artifacts
-assert_file_exists "$REPO/build/dev.md"      "build/dev.md exists"
-assert_file_exists "$REPO/build/install.js"  "build/install.js exists"
+# Build artifact and installer
+assert_file_exists "$REPO/build/dev.md"  "build/dev.md exists"
+assert_file_exists "$REPO/install.js"    "install.js exists"
+
+if [[ -x "$REPO/install.js" ]]; then
+  pass "install.js is executable"
+else
+  fail "install.js is not executable"
+fi
 
 echo ""
 echo "--- dev-mode: src/04-feature-setup.md interview structure ---"
@@ -68,29 +72,13 @@ assert_file_contains "$DEV" "context/project.md"       "build output references 
 assert_file_contains "$DEV" 'context/<argument>.md'    "build output resolves feature path"
 
 echo ""
-echo "--- dev-mode: build artifacts are up to date ---"
+echo "--- dev-mode: installer correctness ---"
 
-# Re-run the build into a temp file and compare to the committed build/dev.md
-TMPDEV="$(mktemp)"
-trap 'rm -f "$TMPDEV"' EXIT
+assert_file_contains "$REPO/install.js" "kusimari.github.io/k-mcp-devkit" \
+  "install.js references GitHub Pages URL"
+assert_file_contains "$REPO/install.js" "build/dev.md" \
+  "install.js references local build path for --local flag"
 
-node "$REPO/build.js" >/dev/null 2>&1
-if diff -q "$REPO/build/dev.md" "$TMPDEV" >/dev/null 2>&1 || [[ -s "$REPO/build/dev.md" ]]; then
-  pass "build/dev.md is present and non-empty"
-else
-  fail "build/dev.md is empty or missing after build"
-fi
-
-if [[ -x "$REPO/build/install.js" ]]; then
-  pass "build/install.js is executable"
-else
-  fail "build/install.js is not executable"
-fi
-
-echo ""
-echo "--- dev-mode: build.js and install.template.js exist ---"
-
-assert_file_exists "$REPO/build.js"              "build.js exists"
-assert_file_exists "$REPO/install.template.js"   "install.template.js exists"
+assert_file_exists "$REPO/build.js" "build.js exists"
 
 summary

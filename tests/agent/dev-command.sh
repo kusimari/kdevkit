@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
-# Tests: agent integration — /dev command via build/install.js
+# Tests: agent integration — /dev command via install.js --local
 #
 # Part 1: Install test (3 dummy projects, one per agent)
-#   For each agent: create a dummy project, run build/install.js <agent>,
+#   For each agent: create a dummy project, run install.js <agent> --local,
 #   verify the correct file structure was created with the full dev.md content.
 #
 # Part 2: Agent invocation test (requires claude CLI + CLAUDE_API_KEY)
-#   Installs dev command for claude-code into a dummy project, then invokes
-#   the claude CLI with the dev instructions and verifies it creates
-#   context/project.md and a context/<feature>.md file.
+#   Installs dev command for claude-code, then invokes the claude CLI with the
+#   dev instructions and verifies it creates context/project.md and a feature file.
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -22,7 +21,7 @@ echo "--- agent/dev-command: install into dummy project (claude-code) ---"
 
 TMP_CC="$(mktemp -d)"
 trap 'rm -rf "$TMP_CC"' EXIT
-( cd "$TMP_CC" && HOME="$TMP_CC/home" node "$REPO/build/install.js" claude-code ) >/dev/null 2>&1
+( cd "$TMP_CC" && HOME="$TMP_CC/home" node "$REPO/install.js" claude-code --local ) >/dev/null 2>&1
 
 assert_dir_exists  "$TMP_CC/.claude/commands"           ".claude/commands/ created"
 assert_file_exists "$TMP_CC/.claude/commands/dev.md"    "dev.md installed for claude-code"
@@ -36,7 +35,7 @@ echo "--- agent/dev-command: install into dummy project (gemini) ---"
 
 TMP_GEM="$(mktemp -d)"
 trap 'rm -rf "$TMP_GEM"' EXIT
-( cd "$TMP_GEM" && HOME="$TMP_GEM/home" node "$REPO/build/install.js" gemini ) >/dev/null 2>&1
+( cd "$TMP_GEM" && HOME="$TMP_GEM/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
 assert_file_exists "$TMP_GEM/GEMINI.md" "GEMINI.md created for gemini"
 assert_file_contains "$TMP_GEM/GEMINI.md" "k-mcp-devkit: dev" "GEMINI.md contains dev section heading"
@@ -47,7 +46,7 @@ echo "--- agent/dev-command: install into dummy project (kiro) ---"
 
 TMP_KI="$(mktemp -d)"
 trap 'rm -rf "$TMP_KI"' EXIT
-( cd "$TMP_KI" && node "$REPO/build/install.js" kiro ) >/dev/null 2>&1
+( cd "$TMP_KI" && node "$REPO/install.js" kiro --local ) >/dev/null 2>&1
 
 assert_dir_exists  "$TMP_KI/.kiro/steering"           ".kiro/steering/ created"
 assert_file_exists "$TMP_KI/.kiro/steering/dev.md"    "dev.md installed for kiro"
@@ -75,20 +74,18 @@ if [[ -z "${CLAUDE_API_KEY:-}" && -z "${ANTHROPIC_API_KEY:-}" ]]; then
   exit 0
 fi
 
-# Create a minimal project context so the agent can skip the project interview
+# Pre-create project context so the agent can skip the project interview
 mkdir -p "$TMP_CC/context"
 cat > "$TMP_CC/context/project.md" <<'EOF'
-Test project used by k-mcp-devkit integration tests. Node.js. No hard constraints.
+Test project for k-mcp-devkit integration tests. Node.js. No hard constraints.
 EOF
 
-# Pass the full dev.md content as the prompt, with a feature name argument
 DEV_CONTENT="$(cat "$TMP_CC/.claude/commands/dev.md")"
 PROMPT="$(printf '%s\n\nThe feature argument is: ci-test' "$DEV_CONTENT")"
 
 echo "  Invoking claude CLI (this may take a moment)..."
 OUTPUT="$(cd "$TMP_CC" && claude --output-format text -p "$PROMPT" 2>&1)" || true
 
-# The agent should have created context/ci-test.md after following Step 2
 FEATURE_FILE="$TMP_CC/context/ci-test.md"
 if [[ -f "$FEATURE_FILE" ]]; then
   pass "context/ci-test.md created by agent"
@@ -102,7 +99,6 @@ else
   fi
 fi
 
-# project.md should still be present
 assert_file_exists "$TMP_CC/context/project.md" "context/project.md preserved after agent run"
 
 summary
