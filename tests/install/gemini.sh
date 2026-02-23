@@ -14,7 +14,7 @@ echo "--- install: gemini (project scope, --local) ---"
 ( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
 assert_file_exists "$TMP/GEMINI.md" "GEMINI.md created"
-assert_file_contains "$TMP/GEMINI.md" "k-mcp-devkit: dev" "GEMINI.md contains section heading"
+assert_file_contains "$TMP/GEMINI.md" "kdevkit: dev" "GEMINI.md contains section heading"
 assert_file_contains "$TMP/GEMINI.md" "/dev" "GEMINI.md contains /dev command reference"
 assert_file_contains "$TMP/GEMINI.md" "Requirements Interview" "GEMINI.md contains full dev content"
 
@@ -23,7 +23,7 @@ echo "--- install: gemini (idempotent — no duplicate sections on re-install) -
 
 ( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
-COUNT="$(grep -cF "k-mcp-devkit: dev" "$TMP/GEMINI.md")"
+COUNT="$(grep -cF "kdevkit: dev" "$TMP/GEMINI.md")"
 if [[ "$COUNT" -eq 1 ]]; then
   pass "section appears exactly once after two installs"
 else
@@ -37,7 +37,7 @@ FAKE_HOME="$TMP/home"
 ( cd "$TMP" && HOME="$FAKE_HOME" node "$REPO/install.js" gemini --local --global ) >/dev/null 2>&1
 
 assert_file_exists "$FAKE_HOME/.gemini/GEMINI.md" "~/.gemini/GEMINI.md created"
-assert_file_contains "$FAKE_HOME/.gemini/GEMINI.md" "k-mcp-devkit: dev" "global GEMINI.md contains dev section"
+assert_file_contains "$FAKE_HOME/.gemini/GEMINI.md" "kdevkit: dev" "global GEMINI.md contains dev section"
 
 echo ""
 echo "--- install: gemini (existing GEMINI.md is preserved) ---"
@@ -49,6 +49,6 @@ echo "Do not delete this." >> "$TMP2/GEMINI.md"
 ( cd "$TMP2" && HOME="$TMP2/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
 assert_file_contains "$TMP2/GEMINI.md" "Existing project notes" "pre-existing content preserved"
-assert_file_contains "$TMP2/GEMINI.md" "k-mcp-devkit: dev"     "new section appended"
+assert_file_contains "$TMP2/GEMINI.md" "kdevkit: dev"     "new section appended"
 
 summary

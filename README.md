@@ -1,67 +1,76 @@
-# k-mcp-devkit
+# kdevkit
 
 Dev practices as a slash command for Claude Code, Gemini CLI, and Amazon Kiro.
 
-The installer fetches the latest `dev.md` from GitHub Pages and writes it into your agent's config. The GitHub repo holds source only; the published app lives on Pages.
-
 ---
 
-## Install from GitHub (no clone needed)
+## Install
+
+### 1. From GitHub
 
 ```sh
-npx github:kusimari/k-mcp-devkit claude-code
-npx github:kusimari/k-mcp-devkit gemini
-npx github:kusimari/k-mcp-devkit kiro
+npx github:kusimari/kdevkit claude-code
+npx github:kusimari/kdevkit gemini
+npx github:kusimari/kdevkit kiro
 ```
 
 Add `--global` to install at user scope instead of project scope (Claude Code and Gemini only):
 
 ```sh
-npx github:kusimari/k-mcp-devkit claude-code --global
+npx github:kusimari/kdevkit claude-code --global
 ```
 
----
+### 2. From a local clone
 
-## Install from a local clone
+Build first, then install from the local build (equivalent to the GitHub version):
 
 ```sh
-git clone https://github.com/kusimari/k-mcp-devkit.git
-cd k-mcp-devkit
-npm run build            # builds build/dev.md and runs tests
-node install.js claude-code --local   # installs from local build
+git clone https://github.com/kusimari/kdevkit.git
+cd kdevkit
+npm run build
+node install.js claude-code --local
 node install.js gemini --local
 node install.js kiro --local
 ```
 
----
+### 3. Cloud or no-install environments
 
-## Manual install (no command needed)
-
-After `npm run build`, copy `build/dev.md` directly into your agent's config:
-
-| Agent | Destination |
-|-------|-------------|
-| Claude Code | `.claude/commands/dev.md` (project) or `~/.claude/commands/dev.md` (global) |
-| Gemini CLI | Append under `## k-mcp-devkit: dev` heading in `GEMINI.md` |
-| Amazon Kiro | `.kiro/steering/dev.md` |
+If you can't run npm (e.g. Claude Code web, claude.ai), skip install — see **Using dev mode without install** below.
 
 ---
 
-## Usage
+## Using dev mode
 
-### Claude Code
+### If installed
+
+**Claude Code**
 
 ```
-/dev [path/to/feature.md]
+/dev [feature-name]
 ```
 
-### Gemini CLI
+**Gemini CLI**
 
-Ask the model: _"Apply the k-mcp-devkit dev section from GEMINI.md and enter dev mode."_
+Ask the model: _"Apply the kdevkit dev section from GEMINI.md and enter dev mode."_
 
-### Amazon Kiro
+**Amazon Kiro**
 
 The steering file is always active. Ask Kiro to enter dev mode or reference the feature file directly.
+
+### Without install (Claude Code web, claude.ai)
+
+Paste this at the start of any session — Claude fetches the devkit on demand:
+
+```
+Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions for feature: [feature-name]
+```
+
+Omit `for feature: ...` to be prompted interactively.
+
+**claude.ai Projects** — add the devkit once, use it in every chat:
+
+1. Open your Project → **Add content** → paste the contents of [`dev.md`](https://kusimari.github.io/kdevkit/dev.md)
+2. Start sessions with: _"Enter dev mode for feature: [name]"_
 
 ---
 

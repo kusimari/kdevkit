@@ -6,17 +6,17 @@ const path = require('path');
 const os = require('os');
 const https = require('https');
 
-const PAGES_URL = 'https://kusimari.github.io/k-mcp-devkit/dev.md';
+const PAGES_URL = 'https://kusimari.github.io/kdevkit/dev.md';
 
 // ---------------------------------------------------------------------------
 // Argument parsing
 // ---------------------------------------------------------------------------
 
 function printHelp() {
-  console.log(`k-mcp-devkit installer
+  console.log(`kdevkit installer
 
 Usage:
-  npx github:kusimari/k-mcp-devkit <agent> [--global]
+  npx github:kusimari/kdevkit <agent> [--global]
   node install.js <agent> [--local] [--global]
 
 Agents:
@@ -31,8 +31,8 @@ Flags:
                 (Claude Code and Gemini only; Kiro is project-only)
 
 Examples:
-  npx github:kusimari/k-mcp-devkit claude-code
-  npx github:kusimari/k-mcp-devkit gemini --global
+  npx github:kusimari/kdevkit claude-code
+  npx github:kusimari/kdevkit gemini --global
   node install.js claude-code --local
 `);
 }
@@ -139,9 +139,9 @@ function installGemini(devMd, opts) {
   const targetFile = opts.global
     ? path.join(os.homedir(), '.gemini', 'GEMINI.md')
     : path.join(process.cwd(), 'GEMINI.md');
-  appendSection(targetFile, '## k-mcp-devkit: dev', devMd);
+  appendSection(targetFile, '## kdevkit: dev', devMd);
   console.log(`\nGemini CLI: dev section in ${targetFile} (scope: ${scope})`);
-  console.log('Activate by asking the model to apply the k-mcp-devkit dev section.');
+  console.log('Activate by asking the model to apply the kdevkit dev section.');
 }
 
 function installKiro(devMd, opts) {
@@ -164,7 +164,7 @@ async function main() {
 
   const scopeLabel = opts.global ? ' (global)' : ' (project)';
   const sourceLabel = opts.local ? ' [local build]' : ' [GitHub Pages]';
-  console.log(`Installing k-mcp-devkit dev for: ${opts.agent}${scopeLabel}${sourceLabel}`);
+  console.log(`Installing kdevkit dev for: ${opts.agent}${scopeLabel}${sourceLabel}`);
   console.log('');
 
   const devMd = await getDevMd(opts);

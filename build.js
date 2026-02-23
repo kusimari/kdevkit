@@ -18,6 +18,8 @@ const devMd = parts.join('\n\n') + '\n';
 
 fs.mkdirSync(BUILD_DIR, { recursive: true });
 fs.writeFileSync(path.join(BUILD_DIR, 'dev.md'), devMd);
+fs.copyFileSync(path.join(REPO, 'index.html'), path.join(BUILD_DIR, 'index.html'));
 
 console.log(`Built build/dev.md from ${srcFiles.length} source file(s):`);
 srcFiles.forEach(f => console.log(`  ${path.relative(REPO, f)}`));
+console.log('Copied index.html → build/index.html');
