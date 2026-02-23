@@ -3,7 +3,7 @@
 Reply with a compact summary:
 
 ```
-Project:  <one sentence from context/project.md>
+Project:  <one sentence from .kdevkit/project.md>
 Feature:  <one sentence from the feature file> [<path to feature file>]
 Practices: git loaded
 ```
@@ -12,4 +12,4 @@ Then stop and wait for the first instruction.
 
 ---
 
-*Managed by [k-mcp-devkit](https://github.com/kusimari/k-mcp-devkit). Context in `context/`.*
+*Managed by [kdevkit](https://github.com/kusimari/kdevkit). Context in `.kdevkit/`.*

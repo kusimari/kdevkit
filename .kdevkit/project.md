@@ -1,13 +1,13 @@
 ## Purpose
 
-k-mcp-devkit provides dev practices as a slash command for coding agents (Claude Code, Gemini CLI, Amazon Kiro). When a user runs `/dev [feature]`, the agent follows structured steps: load project context, set up or load a feature file, apply git conventions, and confirm before starting work.
+kdevkit provides dev practices as a slash command for coding agents (Claude Code, Gemini CLI, Amazon Kiro). When a user runs `/dev [feature]`, the agent follows structured steps: load project context, set up or load a feature file, apply git conventions, and confirm before starting work.
 
 ## Tech Stack
 
 - Node.js ≥18 — `build.js` (build script) and `install.js` (installer); zero npm dependencies, built-ins only (`fs`, `path`, `os`, `https`)
 - Bash — test runner and test suites (`tests/`)
 - Markdown — all content in `src/`
-- GitHub Pages — hosts `build/dev.md` and `install.js` at `kusimari.github.io/k-mcp-devkit`
+- GitHub Pages — hosts `build/dev.md` and `install.js` at `kusimari.github.io/kdevkit`
 - GitHub Actions — CI: `npm run build` on push to `main` (src/install/build changes only) → publish to Pages
 
 ## Constraints
@@ -26,7 +26,7 @@ k-mcp-devkit provides dev practices as a slash command for coding agents (Claude
 | `install.js` | Installer — fetches `dev.md` from GitHub Pages (default) or reads `build/dev.md` (`--local`) |
 | `build.js` | Build script — `src/*.md` → `build/dev.md` |
 | `tests/` | Test suites — run via `npm test` |
-| `context/` | Project and feature context files maintained by `/dev` mode |
+| `.kdevkit/` | Project and feature context files maintained by `/dev` mode |
 
 ## Development Workflow
 

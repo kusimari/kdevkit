@@ -1,9 +1,9 @@
 {
-  "name": "k-mcp-devkit",
+  "name": "kdevkit",
   "version": "1.0.0",
   "description": "Dev practices as a slash command for Claude Code, Gemini CLI, and Amazon Kiro",
   "bin": {
-    "k-mcp-devkit": "./install.js"
+    "kdevkit": "./install.js"
   },
   "scripts": {
     "build": "node build.js",
@@ -26,6 +26,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kusimari/k-mcp-devkit.git"
+    "url": "https://github.com/kusimari/kdevkit.git"
   }
 }

@@ -9,8 +9,8 @@ source "$REPO/tests/helpers.sh"
 echo "--- dev-mode: source files exist ---"
 
 # Context templates (committed so /dev has something to read on first run)
-assert_file_exists "$REPO/context/project.md"  "context/project.md exists"
-assert_file_exists "$REPO/context/feature.md"  "context/feature.md exists"
+assert_file_exists "$REPO/.kdevkit/project.md"         ".kdevkit/project.md exists"
+assert_file_exists "$REPO/.kdevkit/feature/feature.md" ".kdevkit/feature/feature.md exists"
 
 # All src/ topic files
 assert_file_exists "$REPO/src/01-header.md"            "src/01-header.md exists"
@@ -68,13 +68,13 @@ echo "--- dev-mode: build/dev.md (build output) contains all content ---"
 DEV="$REPO/build/dev.md"
 assert_file_contains "$DEV" "Requirements Interview"   "build output includes Requirements Interview"
 assert_file_contains "$DEV" "Conventional Commits"     "build output includes Conventional Commits"
-assert_file_contains "$DEV" "context/project.md"       "build output references context/project.md"
-assert_file_contains "$DEV" 'context/<argument>.md'    "build output resolves feature path"
+assert_file_contains "$DEV" ".kdevkit/project.md"             "build output references .kdevkit/project.md"
+assert_file_contains "$DEV" '.kdevkit/feature/<argument>.md'  "build output resolves feature path"
 
 echo ""
 echo "--- dev-mode: installer correctness ---"
 
-assert_file_contains "$REPO/install.js" "kusimari.github.io/k-mcp-devkit" \
+assert_file_contains "$REPO/install.js" "kusimari.github.io/kdevkit" \
   "install.js references GitHub Pages URL"
 assert_file_contains "$REPO/install.js" "build/dev.md" \
   "install.js references local build path for --local flag"

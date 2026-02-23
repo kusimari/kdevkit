@@ -7,7 +7,7 @@
 #
 # Part 2: Agent invocation test (requires claude CLI + CLAUDE_API_KEY)
 #   Installs dev command for claude-code, then invokes the claude CLI with the
-#   dev instructions and verifies it creates context/project.md and a feature file.
+#   dev instructions and verifies it creates .kdevkit/project.md and a feature file.
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -38,7 +38,7 @@ trap 'rm -rf "$TMP_GEM"' EXIT
 ( cd "$TMP_GEM" && HOME="$TMP_GEM/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
 assert_file_exists "$TMP_GEM/GEMINI.md" "GEMINI.md created for gemini"
-assert_file_contains "$TMP_GEM/GEMINI.md" "k-mcp-devkit: dev" "GEMINI.md contains dev section heading"
+assert_file_contains "$TMP_GEM/GEMINI.md" "kdevkit: dev" "GEMINI.md contains dev section heading"
 assert_file_contains "$TMP_GEM/GEMINI.md" "Requirements Interview" "GEMINI.md contains full dev content"
 
 echo ""
@@ -75,9 +75,9 @@ if [[ -z "${CLAUDE_API_KEY:-}" && -z "${ANTHROPIC_API_KEY:-}" ]]; then
 fi
 
 # Pre-create project context so the agent can skip the project interview
-mkdir -p "$TMP_CC/context"
-cat > "$TMP_CC/context/project.md" <<'EOF'
-Test project for k-mcp-devkit integration tests. Node.js. No hard constraints.
+mkdir -p "$TMP_CC/.kdevkit"
+cat > "$TMP_CC/.kdevkit/project.md" <<'EOF'
+Test project for kdevkit integration tests. Node.js. No hard constraints.
 EOF
 
 DEV_CONTENT="$(cat "$TMP_CC/.claude/commands/dev.md")"
@@ -86,19 +86,19 @@ PROMPT="$(printf '%s\n\nThe feature argument is: ci-test' "$DEV_CONTENT")"
 echo "  Invoking claude CLI (this may take a moment)..."
 OUTPUT="$(cd "$TMP_CC" && claude --output-format text -p "$PROMPT" 2>&1)" || true
 
-FEATURE_FILE="$TMP_CC/context/ci-test.md"
+FEATURE_FILE="$TMP_CC/.kdevkit/feature/ci-test.md"
 if [[ -f "$FEATURE_FILE" ]]; then
-  pass "context/ci-test.md created by agent"
+  pass ".kdevkit/feature/ci-test.md created by agent"
 else
-  FOUND="$(find "$TMP_CC/context" -name "*.md" ! -name "project.md" 2>/dev/null | head -1)"
+  FOUND="$(find "$TMP_CC/.kdevkit/feature" -name "*.md" ! -name "project.md" 2>/dev/null | head -1)"
   if [[ -n "$FOUND" ]]; then
     pass "context feature file created: $(basename "$FOUND")"
   else
-    fail "no feature file created under context/ (agent output below)"
+    fail "no feature file created under .kdevkit/feature/ (agent output below)"
     echo "$OUTPUT" | head -40 | sed 's/^/    /'
   fi
 fi
 
-assert_file_exists "$TMP_CC/context/project.md" "context/project.md preserved after agent run"
+assert_file_exists "$TMP_CC/.kdevkit/project.md" ".kdevkit/project.md preserved after agent run"
 
 summary
