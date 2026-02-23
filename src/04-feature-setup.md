@@ -1,12 +1,10 @@
-# Feature Setup
+### Feature Setup
 
 When a feature file needs to be created, conduct the structured interview process below before writing anything.
 Ask each interview's questions **one at a time** and wait for the answer before continuing.
 Do not ask all questions at once, and do not skip interviews.
 
----
-
-## File Location
+#### File Location
 
 Feature files live in `context/` and are named after the feature:
 - Feature name `user-auth` → `context/user-auth.md`
@@ -15,9 +13,7 @@ Feature files live in `context/` and are named after the feature:
 
 Lowercase, hyphenated, `.md` extension.
 
----
-
-## Git Setup
+#### Git Setup
 
 Before starting the interviews, ask the user about their git setup. Do this once, in order.
 
@@ -54,13 +50,11 @@ If the branch already exists, tell the user and skip creation — just check it 
 
 After the git setup is confirmed or skipped, note the choice in the feature file under `## Git Setup` (see template below).
 
----
-
-## Interview Process
+#### Interview Process
 
 Run all four interviews in order. Each one produces a section of the feature file.
 
-### 1. Requirements Interview
+##### 1. Requirements Interview
 
 **Purpose**: Understand what the feature should do, for whom, and how success is measured.
 
@@ -77,7 +71,7 @@ Push back on vague answers. "It works" is not an acceptance criterion — ask fo
 
 **Output**: Functional requirements, non-functional requirements, user stories, success criteria, constraints.
 
-### 2. Design Interview
+##### 2. Design Interview
 
 **Purpose**: Define the technical approach, architecture decisions, and design rationale.
 
@@ -92,7 +86,7 @@ Questions to ask (one at a time):
 
 **Output**: Architecture overview, technical decisions, data model, API/interface design, security model, dependencies.
 
-### 3. Testing Interview
+##### 3. Testing Interview
 
 **Purpose**: Define how the feature will be validated and verified.
 
@@ -106,7 +100,7 @@ Questions to ask (one at a time):
 
 **Output**: Test plan, specific test cases linked to requirements, edge cases, performance criteria, automation strategy.
 
-### 4. Implementation Interview
+##### 4. Implementation Interview
 
 **Purpose**: Plan the development approach, identify risks, and sequence work.
 
@@ -121,9 +115,7 @@ Questions to ask (one at a time):
 
 **Output**: Development approach, task breakdown with dependencies, risk assessment, integration and deployment plan.
 
----
-
-## Conducting the Interviews
+#### Conducting the Interviews
 
 - Be conversational — ask follow-up questions based on responses
 - Probe for details — do not accept vague answers
@@ -131,9 +123,7 @@ Questions to ask (one at a time):
 - Capture rationale — record not just what was decided, but why
 - Summarise after each interview — repeat back what you heard and confirm before continuing
 
----
-
-## Output Format
+#### Output Format
 
 After completing all four interviews, create the feature file at `context/<feature-name>.md`:
 
@@ -243,11 +233,9 @@ Read the entire file before beginning work. Update the Session Log and Decision 
 **Impact**: Expected effects
 ```
 
-Tell the user where the file was created, then continue to Step 3 of `/dev`.
+Tell the user where the file was created, then continue to Step 3.
 
----
-
-## Keeping the File Current
+#### Keeping the File Current
 
 Throughout the session:
 - Update **Implementation Plan** task statuses as work progresses
@@ -255,4 +243,4 @@ Throughout the session:
 - Record decisions in **Decision Log** — especially choices not covered in the specification
 - Regularly validate implementation against the **Success Criteria**
 
-When the feature is complete, prompt the project context update as described in `commands/dev.md`.
+When the feature is complete, prompt the project context update as described in Step 4 below.
