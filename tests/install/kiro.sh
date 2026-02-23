@@ -15,10 +15,8 @@ echo "--- install: kiro (project scope, --local) ---"
 
 assert_dir_exists  "$TMP/.kiro/steering"           ".kiro/steering/ directory created"
 assert_file_exists "$TMP/.kiro/steering/dev.md"    "dev.md installed to .kiro/steering/"
-assert_files_identical \
-  "$REPO/build/dev.md" \
-  "$TMP/.kiro/steering/dev.md" \
-  "installed dev.md matches build/dev.md"
+assert_file_contains "$TMP/.kiro/steering/dev.md" "kdevkit:built:"      "installed dev.md has build timestamp"
+assert_file_contains "$TMP/.kiro/steering/dev.md" "kdevkit:source:local" "installed dev.md has source metadata"
 assert_file_contains "$TMP/.kiro/steering/dev.md" "Requirements Interview" "steering file has full content"
 
 echo ""
@@ -40,9 +38,7 @@ echo "--- install: kiro (idempotent — re-install overwrites cleanly) ---"
 
 echo "corrupted" > "$TMP/.kiro/steering/dev.md"
 ( cd "$TMP" && node "$REPO/install.js" kiro --local ) >/dev/null 2>&1
-assert_files_identical \
-  "$REPO/build/dev.md" \
-  "$TMP/.kiro/steering/dev.md" \
-  "re-install restores build/dev.md"
+assert_file_contains "$TMP/.kiro/steering/dev.md" "kdevkit:built:"      "re-install restores build timestamp"
+assert_file_contains "$TMP/.kiro/steering/dev.md" "Requirements Interview" "re-install restores full content"
 
 summary

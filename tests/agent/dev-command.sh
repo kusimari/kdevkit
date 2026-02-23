@@ -25,10 +25,7 @@ trap 'rm -rf "$TMP_CC"' EXIT
 
 assert_dir_exists  "$TMP_CC/.claude/commands"           ".claude/commands/ created"
 assert_file_exists "$TMP_CC/.claude/commands/dev.md"    "dev.md installed for claude-code"
-assert_files_identical \
-  "$REPO/build/dev.md" \
-  "$TMP_CC/.claude/commands/dev.md" \
-  "claude-code: installed file matches build/dev.md"
+assert_file_contains "$TMP_CC/.claude/commands/dev.md" "kdevkit:source:local" "claude-code: installed file has source metadata"
 
 echo ""
 echo "--- agent/dev-command: install into dummy project (gemini) ---"
@@ -50,10 +47,7 @@ trap 'rm -rf "$TMP_KI"' EXIT
 
 assert_dir_exists  "$TMP_KI/.kiro/steering"           ".kiro/steering/ created"
 assert_file_exists "$TMP_KI/.kiro/steering/dev.md"    "dev.md installed for kiro"
-assert_files_identical \
-  "$REPO/build/dev.md" \
-  "$TMP_KI/.kiro/steering/dev.md" \
-  "kiro: installed file matches build/dev.md"
+assert_file_contains "$TMP_KI/.kiro/steering/dev.md" "kdevkit:source:local" "kiro: installed file has source metadata"
 
 # ---------------------------------------------------------------------------
 # Part 2: agent invocation (skipped unless claude CLI + API key are present)
