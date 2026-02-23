@@ -67,6 +67,12 @@ Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions fo
 
 Omit `for feature: ...` to be prompted interactively.
 
+If the GitHub Pages URL is blocked (e.g. Claude Code CLI sandbox), use the raw file URL instead:
+
+```
+Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md and follow those instructions for feature: [feature-name]
+```
+
 **claude.ai Projects** — add the devkit once, use it in every chat:
 
 1. Open your Project → **Add content** → paste the contents of [`dev.md`](https://kusimari.github.io/kdevkit/dev.md)
@@ -94,4 +100,4 @@ npm run install:gemini
 npm run install:kiro
 ```
 
-**Source** lives in `src/` (numbered for sort order). `build.js` concatenates them into `build/dev.md`. On push to `main`, CI runs `npm run build` then `npm test`, and on success publishes `build/dev.md` + `install.js` to GitHub Pages. The `build/` directory is gitignored.
+**Source** lives in `src/` (numbered for sort order). `build.js` concatenates them into `build/dev.md`. On push to `main`, CI runs `npm run build` then `npm test`, and on success commits `build/dev.md` back to the repo and publishes `build/dev.md` + `install.js` to GitHub Pages. The `build/` directory is gitignored locally but `build/dev.md` is committed by CI so it's accessible via `raw.githubusercontent.com`.
