@@ -41,8 +41,7 @@ jobs:
       - name: Prepare public directory
         run: |
           mkdir -p public
-          cp build/dev.md public/dev.md
-          cp build/index.html public/index.html
+          cp build/* public/
           cp install.js public/install.js
 
       - name: Setup Pages
