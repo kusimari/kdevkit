@@ -88,6 +88,20 @@ function appendSection(targetFile, heading, content) {
 }
 
 // ---------------------------------------------------------------------------
+// Metadata injection
+// ---------------------------------------------------------------------------
+
+function injectSource(devMd, source) {
+  // Insert <!-- kdevkit:source:... --> on the line immediately after the
+  // <!-- kdevkit:built:... --> timestamp comment (first line).
+  const newline = devMd.indexOf('\n');
+  if (newline === -1) return `<!-- kdevkit:source:${source} -->\n` + devMd;
+  return devMd.slice(0, newline + 1) +
+    `<!-- kdevkit:source:${source} -->\n` +
+    devMd.slice(newline + 1);
+}
+
+// ---------------------------------------------------------------------------
 // Fetch dev.md
 // ---------------------------------------------------------------------------
 
@@ -129,7 +143,8 @@ function installClaudeCode(devMd, opts) {
   const targetDir = opts.global
     ? path.join(os.homedir(), '.claude', 'commands')
     : path.join(process.cwd(), '.claude', 'commands');
-  writeFile(path.join(targetDir, 'dev.md'), devMd);
+  const source = opts.local ? 'local' : 'github-pages';
+  writeFile(path.join(targetDir, 'dev.md'), injectSource(devMd, source));
   console.log(`\nClaude Code: dev command installed (scope: ${scope})`);
   console.log('Invoke with /dev [feature]');
 }
@@ -139,7 +154,8 @@ function installGemini(devMd, opts) {
   const targetFile = opts.global
     ? path.join(os.homedir(), '.gemini', 'GEMINI.md')
     : path.join(process.cwd(), 'GEMINI.md');
-  appendSection(targetFile, '## kdevkit: dev', devMd);
+  const source = opts.local ? 'local' : 'github-pages';
+  appendSection(targetFile, '## kdevkit: dev', injectSource(devMd, source));
   console.log(`\nGemini CLI: dev section in ${targetFile} (scope: ${scope})`);
   console.log('Activate by asking the model to apply the kdevkit dev section.');
 }
@@ -149,7 +165,8 @@ function installKiro(devMd, opts) {
     console.warn('Warning: Kiro does not support global steering files. Installing at project scope.');
   }
   const targetDir = path.join(process.cwd(), '.kiro', 'steering');
-  writeFile(path.join(targetDir, 'dev.md'), devMd);
+  const source = opts.local ? 'local' : 'github-pages';
+  writeFile(path.join(targetDir, 'dev.md'), injectSource(devMd, source));
   console.log(`\nKiro: dev steering file installed → ${path.join(targetDir, 'dev.md')}`);
   console.log('Active in every Kiro session for this project.');
 }

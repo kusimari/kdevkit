@@ -14,7 +14,8 @@ const srcFiles = fs.readdirSync(SRC_DIR)
   .map(f => path.join(SRC_DIR, f));
 
 const parts = srcFiles.map(f => fs.readFileSync(f, 'utf8').replace(/\n+$/, ''));
-const devMd = parts.join('\n\n') + '\n';
+const timestamp = new Date().toISOString();
+const devMd = `<!-- kdevkit:built:${timestamp} -->\n` + parts.join('\n\n') + '\n';
 
 fs.mkdirSync(BUILD_DIR, { recursive: true });
 fs.writeFileSync(path.join(BUILD_DIR, 'dev.md'), devMd);
