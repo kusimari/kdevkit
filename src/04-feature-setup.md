@@ -6,10 +6,10 @@ Do not ask all questions at once, and do not skip interviews.
 
 #### File Location
 
-Feature files live in `context/` and are named after the feature:
-- Feature name `user-auth` → `context/user-auth.md`
-- Feature name `export-to-csv` → `context/export-to-csv.md`
-- Default (no name given) → `context/feature.md`
+Feature files live in `.kdevkit/feature/` and are named after the feature:
+- Feature name `user-auth` → `.kdevkit/feature/user-auth.md`
+- Feature name `export-to-csv` → `.kdevkit/feature/export-to-csv.md`
+- Default (no name given) → `.kdevkit/feature/feature.md`
 
 Lowercase, hyphenated, `.md` extension.
 
@@ -125,7 +125,7 @@ Questions to ask (one at a time):
 
 #### Output Format
 
-After completing all four interviews, create the feature file at `context/<feature-name>.md`:
+After completing all four interviews, create the feature file at `.kdevkit/feature/<feature-name>.md`:
 
 ```markdown
 # <Feature Name>

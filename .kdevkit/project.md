@@ -7,7 +7,7 @@ kdevkit provides dev practices as a slash command for coding agents (Claude Code
 - Node.js ≥18 — `build.js` (build script) and `install.js` (installer); zero npm dependencies, built-ins only (`fs`, `path`, `os`, `https`)
 - Bash — test runner and test suites (`tests/`)
 - Markdown — all content in `src/`
-- GitHub Pages — hosts `build/dev.md` and `install.js` at `kusimari.github.io/kdevkit`
+- GitHub Pages — hosts `build/dev.md`, `install.js`, and `index.html` at `kusimari.github.io/kdevkit`
 - GitHub Actions — CI: `npm run build` on push to `main` (src/install/build changes only) → publish to Pages
 
 ## Constraints
@@ -22,11 +22,13 @@ kdevkit provides dev practices as a slash command for coding agents (Claude Code
 | Path | Role |
 |------|------|
 | `src/` | Source markdown files (`01-header.md` … `07-confirm.md`), sorted and concatenated by `build.js` |
-| `build/` | Generated output (gitignored); `build/dev.md` is what gets published and installed |
+| `build/` | Generated output (gitignored); `build/dev.md` and `build/index.html` are published to Pages |
 | `install.js` | Installer — fetches `dev.md` from GitHub Pages (default) or reads `build/dev.md` (`--local`) |
 | `build.js` | Build script — `src/*.md` → `build/dev.md` |
 | `tests/` | Test suites — run via `npm test` |
-| `.kdevkit/` | Project and feature context files maintained by `/dev` mode |
+| `.kdevkit/project.md` | Project context loaded by `/dev` on every session |
+| `.kdevkit/feature/` | Feature context files — one per feature, created/updated by `/dev` |
+| `index.html` | Landing page (source); built to `build/index.html`, deployed to Pages |
 
 ## Development Workflow
 
