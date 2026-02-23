@@ -49,11 +49,26 @@ After `npm run build`, copy `build/dev.md` directly into your agent's config:
 
 ## Usage
 
-### Claude Code
+### Claude Code (after install)
 
 ```
-/dev [path/to/feature.md]
+/dev [feature-name]
 ```
+
+### Claude Code Web / Claude.ai (no install required)
+
+Paste this at the start of any session — Claude fetches the devkit on demand:
+
+```
+Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions for feature: [feature-name]
+```
+
+Claude will load `.kdevkit/project.md` from the repo root (creating it if absent) and enter dev mode. Omit `for feature: ...` to be prompted interactively.
+
+**claude.ai Projects** — add the devkit once, use it in every chat:
+
+1. Open your Project → **Add content** → paste the contents of [`dev.md`](https://kusimari.github.io/kdevkit/dev.md)
+2. Start sessions with: _"Enter dev mode for feature: [name]"_
 
 ### Gemini CLI
 
