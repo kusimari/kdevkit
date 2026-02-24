@@ -44,8 +44,13 @@ else
   fail "no completion trigger language found in dev.md"
 fi
 
+# Phase gating and YOLO mode
+assert_file_contains "$DEV" "phase" "phase gating rule present"
+assert_file_contains "$DEV" "yolo"  "YOLO mode toggle present"
+
 # Confirmation format
 assert_file_contains "$DEV" "Project:" "confirmation block contains Project: line"
 assert_file_contains "$DEV" "Feature:" "confirmation block contains Feature: line"
+assert_file_contains "$DEV" "Mode:"    "confirmation block contains Mode: line"
 
 summary
