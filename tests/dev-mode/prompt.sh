@@ -44,6 +44,10 @@ else
   fail "no completion trigger language found in dev.md"
 fi
 
+# Options / invocation parameters
+assert_file_contains "$DEV" "Options"   "options table present in header"
+assert_file_contains "$DEV" "options"   "options parsing instruction present"
+
 # Phase gating and YOLO mode
 assert_file_contains "$DEV" "phase" "phase gating rule present"
 assert_file_contains "$DEV" "yolo"  "YOLO mode toggle present"

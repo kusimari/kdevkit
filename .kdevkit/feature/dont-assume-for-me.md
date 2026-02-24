@@ -128,6 +128,10 @@ Edit three source files, add test assertions, build and test.
 | Add `Mode:` line to `src/07-confirm.md` | ✅ Complete |
 | Add test assertions to `tests/dev-mode/prompt.sh` | ✅ Complete |
 | Run `npm run build && npm test` | ✅ Complete |
+| Expand `src/01-header.md` with options table and invocation parsing | ✅ Complete |
+| Update `src/07-confirm.md` Mode line to reflect active mode dynamically | ✅ Complete |
+| Update `README.md` with parameterised invocation examples and TODO | ✅ Complete |
+| Add options assertions to `tests/dev-mode/prompt.sh` | ✅ Complete |
 | Commit and push | ⏳ In Progress |
 
 ### Dependencies & Sequencing
@@ -150,7 +154,14 @@ Push to `claude/dont-assume-for-me-feature-KOELh`. CI rebuilds on merge to `main
 ## Session Log
 <!-- Newest entry at top -->
 
-### 2026-02-24 — Implementation complete
+### 2026-02-24 — Invocation parameters and README
+- Expanded `src/01-header.md`: full options table, Gemini/Kiro/fetch invocation note, pre-Step-1 parsing instruction
+- Updated `src/07-confirm.md` Mode line to reflect the active mode dynamically (normal vs YOLO)
+- Updated `README.md`: parameterised invocation examples for all agents, "Available options" table, "Setting options during a session" section, TODO for future param listing command
+- Added `Options`/`options` assertions to `tests/dev-mode/prompt.sh`
+- `npm run build && npm test`: 6 suites, 0 failures (22 assertions in prompt.sh)
+
+### 2026-02-24 — Phase gating and YOLO mode
 - Added Phase gating + YOLO mode rules to `src/06-session-behaviour.md`
 - Added YOLO mode usage note to `src/01-header.md`
 - Added `Mode:` line to confirmation block in `src/07-confirm.md`

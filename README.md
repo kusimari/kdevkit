@@ -46,16 +46,33 @@ If you can't run npm (e.g. Claude Code web, claude.ai), skip install — see **U
 **Claude Code**
 
 ```
-/dev [feature-name]
+/dev [feature] [options]
+```
+
+Examples:
+```
+/dev                      # prompted for feature name, normal mode
+/dev my-feature           # loads or creates my-feature, normal mode
+/dev my-feature yolo      # loads my-feature in YOLO mode
 ```
 
 **Gemini CLI**
 
-Ask the model: _"Apply the kdevkit dev section from GEMINI.md and enter dev mode."_
+Ask the model, including any options inline:
+
+```
+Apply the kdevkit dev section from GEMINI.md and enter dev mode for feature: my-feature
+Apply the kdevkit dev section from GEMINI.md and enter dev mode for feature: my-feature with yolo
+```
 
 **Amazon Kiro**
 
-The steering file is always active. Ask Kiro to enter dev mode or reference the feature file directly.
+The steering file is always active. Ask Kiro to enter dev mode, including any options:
+
+```
+Enter dev mode for my-feature
+Enter dev mode for my-feature with yolo
+```
 
 ### Without install (Claude Code web, claude.ai)
 
@@ -63,6 +80,12 @@ Paste this at the start of any session — Claude fetches the devkit on demand:
 
 ```
 Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions for feature: [feature-name]
+```
+
+Include options inline:
+
+```
+Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions for feature: [feature-name] with yolo
 ```
 
 Omit `for feature: ...` to be prompted interactively.
@@ -76,7 +99,20 @@ Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md and f
 **claude.ai Projects** — add the devkit once, use it in every chat:
 
 1. Open your Project → **Add content** → paste the contents of [`dev.md`](https://kusimari.github.io/kdevkit/dev.md)
-2. Start sessions with: _"Enter dev mode for feature: [name]"_
+2. Start sessions with: _"Enter dev mode for feature: [name]"_ or _"Enter dev mode for feature: [name] with yolo"_
+
+### Available options
+
+| Option | Effect |
+|--------|--------|
+| `yolo` | YOLO mode: chain phases automatically and skip assumption plans |
+| `yolo off` | Return to normal gated mode |
+
+> **TODO:** Add a way to list all available parameters and their current values (e.g. `/dev params` or equivalent) as a separate capability in a future release.
+
+### Setting options during a session
+
+Say `yolo` at any point to enable YOLO mode, or `yolo off` to return to normal gated mode. Options take effect immediately and persist for the rest of the session.
 
 ---
 
