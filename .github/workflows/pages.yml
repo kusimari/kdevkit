@@ -35,12 +35,12 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Commit built dev.md to repository
+      - name: Commit built files to repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f build/dev.md
-          git diff --cached --quiet || git commit -m "chore: update build/dev.md [skip ci]"
+          git add -f build/dev.md build/feature-setup.md build/git-practices.md
+          git diff --cached --quiet || git commit -m "chore: update build output [skip ci]"
           git push origin main
 
       - name: Prepare public directory

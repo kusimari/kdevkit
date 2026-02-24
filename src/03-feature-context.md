@@ -8,5 +8,5 @@ Determine the feature file to load:
 
 Then:
 - **File has content** → load it silently; note what is currently being built.
-- **File is missing or empty** → conduct the Feature Setup process below to create it.
+- **File is missing or empty** → follow the Feature Setup process in `kdevkit/feature-setup.md` to create it.
   Do not continue to Step 3 until the file exists with real content.

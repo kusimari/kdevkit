@@ -27,12 +27,13 @@ assert_file_contains "$DEV" "Step 5" "Step 5 (confirm) present"
 assert_file_contains "$DEV" ".kdevkit/project.md"             "references .kdevkit/project.md"
 assert_file_contains "$DEV" '.kdevkit/feature/<argument>.md'  "resolves feature path as .kdevkit/feature/<argument>.md"
 
-# Git practices content is inlined
-assert_file_contains "$DEV" "Conventional Commits"    "git practices: Conventional Commits present"
-assert_file_contains "$DEV" "feat"                    "git practices: feat type present"
+# Git practices content is in companion file
+assert_file_contains "$REPO/build/git-practices.md" "Conventional Commits" "git practices: Conventional Commits present"
+assert_file_contains "$DEV" "git-practices.md"                              "git practices: companion file referenced"
 
-# Feature setup content is inlined
-assert_file_contains "$DEV" "Requirements Interview"  "feature setup: Requirements Interview present"
+# Feature setup content is in companion file
+assert_file_contains "$REPO/build/feature-setup.md" "Requirements Interview" "feature setup: Requirements Interview present"
+assert_file_contains "$DEV" "feature-setup.md"                               "feature setup: companion file referenced"
 
 # Feature completion trigger
 assert_file_contains "$DEV" ".kdevkit/project.md" \

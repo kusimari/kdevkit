@@ -16,14 +16,17 @@ assert_file_exists "$REPO/.kdevkit/feature/feature.md" ".kdevkit/feature/feature
 assert_file_exists "$REPO/src/01-header.md"            "src/01-header.md exists"
 assert_file_exists "$REPO/src/02-project-context.md"   "src/02-project-context.md exists"
 assert_file_exists "$REPO/src/03-feature-context.md"   "src/03-feature-context.md exists"
-assert_file_exists "$REPO/src/04-feature-setup.md"     "src/04-feature-setup.md exists"
-assert_file_exists "$REPO/src/05-git-practices.md"     "src/05-git-practices.md exists"
+assert_file_exists "$REPO/src/04-feature-setup-reference.md"  "src/04-feature-setup-reference.md exists"
+assert_file_exists "$REPO/src/05-git-practices-stub.md"       "src/05-git-practices-stub.md exists"
+assert_file_exists "$REPO/src/05-git-practices-reference.md"  "src/05-git-practices-reference.md exists"
 assert_file_exists "$REPO/src/06-session-behaviour.md" "src/06-session-behaviour.md exists"
 assert_file_exists "$REPO/src/07-confirm.md"           "src/07-confirm.md exists"
 
-# Build artifact and installer
-assert_file_exists "$REPO/build/dev.md"  "build/dev.md exists"
-assert_file_exists "$REPO/install.js"    "install.js exists"
+# Build artifacts and installer
+assert_file_exists "$REPO/build/dev.md"            "build/dev.md exists"
+assert_file_exists "$REPO/build/feature-setup.md"  "build/feature-setup.md exists"
+assert_file_exists "$REPO/build/git-practices.md"  "build/git-practices.md exists"
+assert_file_exists "$REPO/install.js"              "install.js exists"
 
 if [[ -x "$REPO/install.js" ]]; then
   pass "install.js is executable"
@@ -32,9 +35,9 @@ else
 fi
 
 echo ""
-echo "--- dev-mode: src/04-feature-setup.md interview structure ---"
+echo "--- dev-mode: src/04-feature-setup-reference.md interview structure ---"
 
-FS="$REPO/src/04-feature-setup.md"
+FS="$REPO/src/04-feature-setup-reference.md"
 assert_file_contains "$FS" "Requirements Interview"    "feature-setup includes Requirements Interview"
 assert_file_contains "$FS" "Design Interview"          "feature-setup includes Design Interview"
 assert_file_contains "$FS" "Testing Interview"         "feature-setup includes Testing Interview"
@@ -54,28 +57,48 @@ assert_file_contains "$FS" "Dependenc"                 "interview covers Depende
 assert_file_contains "$FS" "one at a time"             "interview specifies asking one question at a time"
 
 echo ""
-echo "--- dev-mode: src/05-git-practices.md content ---"
+echo "--- dev-mode: src/05-git-practices-reference.md content ---"
 
-GIT="$REPO/src/05-git-practices.md"
+GIT="$REPO/src/05-git-practices-reference.md"
 assert_file_contains "$GIT" "feat"         "git practices covers feat branch type"
 assert_file_contains "$GIT" "fix"          "git practices covers fix branch type"
 assert_file_contains "$GIT" "Conventional" "git practices references Conventional Commits"
 assert_file_contains "$GIT" "global"       "git practices contains global config restriction"
 
 echo ""
-echo "--- dev-mode: build/dev.md (build output) contains all content ---"
+echo "--- dev-mode: build/dev.md (build output) is compact and references companions ---"
 
 DEV="$REPO/build/dev.md"
-assert_file_contains "$DEV" "Requirements Interview"   "build output includes Requirements Interview"
-assert_file_contains "$DEV" "Conventional Commits"     "build output includes Conventional Commits"
 assert_file_contains "$DEV" ".kdevkit/project.md"             "build output references .kdevkit/project.md"
 assert_file_contains "$DEV" '.kdevkit/feature/<argument>.md'  "build output resolves feature path"
+assert_file_contains "$DEV" "feature-setup.md"                "build output references feature-setup companion"
+assert_file_contains "$DEV" "git-practices.md"                "build output references git-practices companion"
+assert_file_contains "$DEV" "kusimari.github.io/kdevkit/feature-setup.md" "build output has no-install URL for feature-setup"
+assert_file_contains "$DEV" "kusimari.github.io/kdevkit/git-practices.md" "build output has no-install URL for git-practices"
+
+echo ""
+echo "--- dev-mode: build/feature-setup.md (companion) has full interview content ---"
+
+FS_BUILD="$REPO/build/feature-setup.md"
+assert_file_contains "$FS_BUILD" "Requirements Interview"    "build feature-setup includes Requirements Interview"
+assert_file_contains "$FS_BUILD" "Design Interview"          "build feature-setup includes Design Interview"
+assert_file_contains "$FS_BUILD" "Testing Interview"         "build feature-setup includes Testing Interview"
+assert_file_contains "$FS_BUILD" "Implementation Interview"  "build feature-setup includes Implementation Interview"
+
+echo ""
+echo "--- dev-mode: build/git-practices.md (companion) has git conventions ---"
+
+GIT_BUILD="$REPO/build/git-practices.md"
+assert_file_contains "$GIT_BUILD" "Conventional Commits"  "build git-practices includes Conventional Commits"
+assert_file_contains "$GIT_BUILD" "global"                "build git-practices has global config restriction"
 
 echo ""
 echo "--- dev-mode: installer correctness ---"
 
 assert_file_contains "$REPO/install.js" "kusimari.github.io/kdevkit" \
   "install.js references GitHub Pages URL"
+assert_file_contains "$REPO/install.js" "COMPANION_FILES" \
+  "install.js defines companion files list"
 assert_file_contains "$REPO/install.js" "build/dev.md" \
   "install.js references local build path for --local flag"
 
