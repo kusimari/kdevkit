@@ -14,21 +14,26 @@ echo "--- install: gemini (project scope, --local) ---"
 ( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
 assert_file_exists "$TMP/GEMINI.md" "GEMINI.md created"
-assert_file_contains "$TMP/GEMINI.md" "kdevkit: dev" "GEMINI.md contains section heading"
-assert_file_contains "$TMP/GEMINI.md" "/dev" "GEMINI.md contains /dev command reference"
-assert_file_contains "$TMP/GEMINI.md" "Requirements Interview" "GEMINI.md contains full dev content"
+assert_file_contains "$TMP/GEMINI.md" "kdevkit: dev"           "GEMINI.md contains dev section heading"
+assert_file_contains "$TMP/GEMINI.md" "kdevkit: feature-setup" "GEMINI.md contains feature-setup section"
+assert_file_contains "$TMP/GEMINI.md" "kdevkit: git-practices"  "GEMINI.md contains git-practices section"
+assert_file_contains "$TMP/GEMINI.md" "/dev"                    "GEMINI.md contains /dev command reference"
+assert_file_contains "$TMP/GEMINI.md" "Requirements Interview"  "GEMINI.md contains feature-setup content"
+assert_file_contains "$TMP/GEMINI.md" "Conventional Commits"    "GEMINI.md contains git-practices content"
 
 echo ""
 echo "--- install: gemini (idempotent — no duplicate sections on re-install) ---"
 
 ( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" gemini --local ) >/dev/null 2>&1
 
-COUNT="$(grep -cF "kdevkit: dev" "$TMP/GEMINI.md")"
-if [[ "$COUNT" -eq 1 ]]; then
-  pass "section appears exactly once after two installs"
-else
-  fail "section duplicated after re-install (found $COUNT times)"
-fi
+for SECTION in "kdevkit: dev" "kdevkit: feature-setup" "kdevkit: git-practices"; do
+  COUNT="$(grep -cE "^## ${SECTION}$" "$TMP/GEMINI.md")"
+  if [[ "$COUNT" -eq 1 ]]; then
+    pass "'## $SECTION' heading appears exactly once after two installs"
+  else
+    fail "'## $SECTION' heading duplicated after re-install (found $COUNT times)"
+  fi
+done
 
 echo ""
 echo "--- install: gemini (global scope, --local) ---"

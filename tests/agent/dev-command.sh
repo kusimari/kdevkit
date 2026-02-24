@@ -36,7 +36,7 @@ trap 'rm -rf "$TMP_GEM"' EXIT
 
 assert_file_exists "$TMP_GEM/GEMINI.md" "GEMINI.md created for gemini"
 assert_file_contains "$TMP_GEM/GEMINI.md" "kdevkit: dev" "GEMINI.md contains dev section heading"
-assert_file_contains "$TMP_GEM/GEMINI.md" "Requirements Interview" "GEMINI.md contains full dev content"
+assert_file_contains "$TMP_GEM/GEMINI.md" "Requirements Interview" "GEMINI.md contains feature-setup content"
 
 echo ""
 echo "--- agent/dev-command: install into dummy project (kiro) ---"

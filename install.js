@@ -6,7 +6,9 @@ const path = require('path');
 const os = require('os');
 const https = require('https');
 
-const PAGES_URL = 'https://kusimari.github.io/kdevkit/dev.md';
+const PAGES_BASE = 'https://kusimari.github.io/kdevkit';
+const PAGES_URL = `${PAGES_BASE}/dev.md`;
+const COMPANION_FILES = ['feature-setup.md', 'git-practices.md'];
 
 // ---------------------------------------------------------------------------
 // Argument parsing
@@ -77,7 +79,7 @@ function writeFile(dest, content) {
 
 function appendSection(targetFile, heading, content) {
   const existing = fs.existsSync(targetFile) ? fs.readFileSync(targetFile, 'utf8') : '';
-  if (existing.includes(heading)) {
+  if (existing.split('\n').some(line => line === heading)) {
     console.log(`  skipped (already present): ${heading}`);
     return false;
   }
@@ -102,7 +104,7 @@ function injectSource(devMd, source) {
 }
 
 // ---------------------------------------------------------------------------
-// Fetch dev.md
+// Fetch files
 // ---------------------------------------------------------------------------
 
 function fetchUrl(url) {
@@ -122,51 +124,74 @@ function fetchUrl(url) {
   });
 }
 
-async function getDevMd(opts) {
+async function getFile(opts, filename) {
   if (opts.local) {
-    const localPath = path.join(__dirname, 'build', 'dev.md');
+    const localPath = path.join(__dirname, 'build', filename);
     if (!fs.existsSync(localPath)) {
-      die("build/dev.md not found. Run 'npm run build' first.");
+      die(`build/${filename} not found. Run 'npm run build' first.`);
     }
     return fs.readFileSync(localPath, 'utf8');
   }
-  console.log(`  fetching: ${PAGES_URL}`);
-  return fetchUrl(PAGES_URL);
+  const url = `${PAGES_BASE}/${filename}`;
+  console.log(`  fetching: ${url}`);
+  return fetchUrl(url);
+}
+
+async function getDevMd(opts) {
+  return getFile(opts, 'dev.md');
+}
+
+async function getCompanionFiles(opts) {
+  const files = {};
+  for (const filename of COMPANION_FILES) {
+    files[filename] = await getFile(opts, filename);
+  }
+  return files;
 }
 
 // ---------------------------------------------------------------------------
 // Agent installers
 // ---------------------------------------------------------------------------
 
-function installClaudeCode(devMd, opts) {
+function installClaudeCode(devMd, companionFiles, opts) {
   const scope = opts.global ? 'global' : 'project';
   const targetDir = opts.global
     ? path.join(os.homedir(), '.claude', 'commands')
     : path.join(process.cwd(), '.claude', 'commands');
   const source = opts.local ? 'local' : 'github-pages';
   writeFile(path.join(targetDir, 'dev.md'), injectSource(devMd, source));
+  for (const [filename, content] of Object.entries(companionFiles)) {
+    writeFile(path.join(targetDir, 'kdevkit', filename), content);
+  }
   console.log(`\nClaude Code: dev command installed (scope: ${scope})`);
   console.log('Invoke with /dev [feature]');
 }
 
-function installGemini(devMd, opts) {
+function installGemini(devMd, companionFiles, opts) {
   const scope = opts.global ? 'global' : 'project';
   const targetFile = opts.global
     ? path.join(os.homedir(), '.gemini', 'GEMINI.md')
     : path.join(process.cwd(), 'GEMINI.md');
   const source = opts.local ? 'local' : 'github-pages';
   appendSection(targetFile, '## kdevkit: dev', injectSource(devMd, source));
+  for (const [filename, content] of Object.entries(companionFiles)) {
+    const sectionName = filename.replace('.md', '');
+    appendSection(targetFile, `## kdevkit: ${sectionName}`, content);
+  }
   console.log(`\nGemini CLI: dev section in ${targetFile} (scope: ${scope})`);
   console.log('Activate by asking the model to apply the kdevkit dev section.');
 }
 
-function installKiro(devMd, opts) {
+function installKiro(devMd, companionFiles, opts) {
   if (opts.global) {
     console.warn('Warning: Kiro does not support global steering files. Installing at project scope.');
   }
   const targetDir = path.join(process.cwd(), '.kiro', 'steering');
   const source = opts.local ? 'local' : 'github-pages';
   writeFile(path.join(targetDir, 'dev.md'), injectSource(devMd, source));
+  for (const [filename, content] of Object.entries(companionFiles)) {
+    writeFile(path.join(targetDir, 'kdevkit', filename), content);
+  }
   console.log(`\nKiro: dev steering file installed → ${path.join(targetDir, 'dev.md')}`);
   console.log('Active in every Kiro session for this project.');
 }
@@ -185,11 +210,12 @@ async function main() {
   console.log('');
 
   const devMd = await getDevMd(opts);
+  const companionFiles = await getCompanionFiles(opts);
 
   switch (opts.agent) {
-    case 'claude-code': installClaudeCode(devMd, opts); break;
-    case 'gemini':      installGemini(devMd, opts);     break;
-    case 'kiro':        installKiro(devMd, opts);       break;
+    case 'claude-code': installClaudeCode(devMd, companionFiles, opts); break;
+    case 'gemini':      installGemini(devMd, companionFiles, opts);     break;
+    case 'kiro':        installKiro(devMd, companionFiles, opts);       break;
     default: die(`unknown agent '${opts.agent}'.\nAvailable: claude-code, gemini, kiro`);
   }
 }

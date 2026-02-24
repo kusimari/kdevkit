@@ -25,10 +25,17 @@ Before doing anything else, check whether kdevkit is up to date. This step is si
 6. **If yes — apply the update:**
    a. Take the remote content. Re-insert the original `<!-- kdevkit:source:{SOURCE} -->` comment on the
       line immediately after the new `<!-- kdevkit:built:... -->` line (the remote content will not have it).
-   b. Overwrite the installed file with the updated content.
+   b. Overwrite `dev.md` with the updated content:
       - Claude Code: `.claude/commands/dev.md` (or `~/.claude/commands/dev.md` if globally installed)
       - Kiro: `.kiro/steering/dev.md`
-      - Gemini: replace only the kdevkit dev section (bounded by its `##` heading) in `GEMINI.md` (or `~/.gemini/GEMINI.md`)
+      - Gemini: replace only the `## kdevkit: dev` section in `GEMINI.md` (or `~/.gemini/GEMINI.md`)
+   b2. Update companion files from the same source:
+      - `github-pages` → fetch `https://kusimari.github.io/kdevkit/feature-setup.md` and `.../git-practices.md`
+      - `raw` → fetch `https://raw.githubusercontent.com/kusimari/kdevkit/main/build/feature-setup.md` and `.../git-practices.md`
+      - `local` → read `build/feature-setup.md` and `build/git-practices.md`
+      For Claude Code and Kiro: write each to the `kdevkit/` subdirectory alongside `dev.md`.
+      For Gemini: replace the `## kdevkit: feature-setup` and `## kdevkit: git-practices` sections.
+      If any companion fetch fails, note it but continue.
    c. Diff the old and new content to identify which steps changed.
    d. If Step 1 (project context guidance) changed: note *"Project context step updated — consider reviewing `.kdevkit/project.md`."*
    e. If Steps 2–4 (feature context or setup guidance) changed: note *"Feature guidance updated — consider reviewing the current feature file."*
