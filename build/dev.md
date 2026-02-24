@@ -1,4 +1,4 @@
-<!-- kdevkit:built:2026-02-24T04:51:17.198Z -->
+<!-- kdevkit:built:2026-02-24T22:01:00.909Z -->
 ## Step 0 — Self-update check
 
 Before doing anything else, check whether kdevkit is up to date. This step is silent unless an update is found.
