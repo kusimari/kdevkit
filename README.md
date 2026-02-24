@@ -41,6 +41,15 @@ If you can't run npm (e.g. Claude Code web, claude.ai), skip install — see **U
 
 ## Using dev mode
 
+Options are **off by default**. Pass them at invocation or say them at any point during the session.
+
+| Option | Effect |
+|--------|--------|
+| `yolo` | Chain phases automatically and skip assumption plans |
+| `yolo off` | Return to normal gated mode |
+
+> **TODO:** Add a way to list all available parameters and their current values (e.g. `/dev params` or equivalent) as a separate capability in a future release.
+
 ### If installed
 
 **Claude Code**
@@ -49,16 +58,12 @@ If you can't run npm (e.g. Claude Code web, claude.ai), skip install — see **U
 /dev [feature] [options]
 ```
 
-Examples:
 ```
-/dev                      # prompted for feature name, normal mode
-/dev my-feature           # loads or creates my-feature, normal mode
-/dev my-feature yolo      # loads my-feature in YOLO mode
+/dev my-feature           # normal mode (default)
+/dev my-feature yolo      # YOLO mode from the start
 ```
 
 **Gemini CLI**
-
-Ask the model, including any options inline:
 
 ```
 Apply the kdevkit dev section from GEMINI.md and enter dev mode for feature: my-feature
@@ -67,8 +72,6 @@ Apply the kdevkit dev section from GEMINI.md and enter dev mode for feature: my-
 
 **Amazon Kiro**
 
-The steering file is always active. Ask Kiro to enter dev mode, including any options:
-
 ```
 Enter dev mode for my-feature
 Enter dev mode for my-feature with yolo
@@ -76,21 +79,14 @@ Enter dev mode for my-feature with yolo
 
 ### Without install (Claude Code web, claude.ai)
 
-Paste this at the start of any session — Claude fetches the devkit on demand:
-
 ```
 Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions for feature: [feature-name]
-```
-
-Include options inline:
-
-```
 Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions for feature: [feature-name] with yolo
 ```
 
 Omit `for feature: ...` to be prompted interactively.
 
-If the GitHub Pages URL is blocked (e.g. Claude Code CLI sandbox), use the raw file URL instead:
+If the GitHub Pages URL is blocked (e.g. Claude Code CLI sandbox):
 
 ```
 Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md and follow those instructions for feature: [feature-name]
@@ -99,20 +95,7 @@ Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md and f
 **claude.ai Projects** — add the devkit once, use it in every chat:
 
 1. Open your Project → **Add content** → paste the contents of [`dev.md`](https://kusimari.github.io/kdevkit/dev.md)
-2. Start sessions with: _"Enter dev mode for feature: [name]"_ or _"Enter dev mode for feature: [name] with yolo"_
-
-### Available options
-
-| Option | Effect |
-|--------|--------|
-| `yolo` | YOLO mode: chain phases automatically and skip assumption plans |
-| `yolo off` | Return to normal gated mode |
-
-> **TODO:** Add a way to list all available parameters and their current values (e.g. `/dev params` or equivalent) as a separate capability in a future release.
-
-### Setting options during a session
-
-Say `yolo` at any point to enable YOLO mode, or `yolo off` to return to normal gated mode. Options take effect immediately and persist for the rest of the session.
+2. Start sessions with: _"Enter dev mode for feature: [name]"_ or add `with yolo` to start in YOLO mode.
 
 ---
 
