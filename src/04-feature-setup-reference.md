@@ -1,7 +1,5 @@
 ### Feature Setup
 
-**No assumptions.** Never assume what the user wants. Do not pre-fill any section of the template with inferred requirements, guessed preferences, or content derived from context — even if you feel confident you know the answer. Ask every question. Wait for every answer. If you are uncertain about anything, ask rather than assume.
-
 When a feature file needs to be created, conduct the structured interview process below before writing anything.
 Ask each interview's questions **one at a time** and wait for the answer before continuing.
 Do not ask all questions at once, and do not skip interviews.

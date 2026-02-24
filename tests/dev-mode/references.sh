@@ -55,7 +55,6 @@ assert_file_contains "$FS" "Decision Log"              "template includes Decisi
 assert_file_contains "$FS" "Constraint"                "interview covers Constraints"
 assert_file_contains "$FS" "Dependenc"                 "interview covers Dependencies"
 assert_file_contains "$FS" "one at a time"             "interview specifies asking one question at a time"
-assert_file_contains "$FS" "assume"                    "feature-setup prohibits agents from making assumptions"
 
 echo ""
 echo "--- dev-mode: src/05-git-practices-reference.md content ---"
