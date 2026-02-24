@@ -1,4 +1,4 @@
-<!-- kdevkit:built:2026-02-24T23:01:59.704Z -->
+<!-- kdevkit:built:2026-02-24T23:11:53.635Z -->
 ## Step 0 — Self-update check
 
 Before doing anything else, check whether kdevkit is up to date. This step is silent unless an update is found.
@@ -48,9 +48,18 @@ Before doing anything else, check whether kdevkit is up to date. This step is si
 
 # /dev — Enter Dev Mode
 
-Usage: `/dev [path/to/feature.md]`
+Usage: `/dev [feature] [options]`
 
-Say **yolo** at any time to chain phases automatically and skip assumption plans. Say **yolo off** to restore gated mode.
+**Options** (set at invocation or at any point during the session):
+
+| Option | Effect |
+|--------|--------|
+| `yolo` | YOLO mode: chain phases automatically and skip assumption plans |
+| `yolo off` | Return to normal gated mode |
+
+For Gemini, Kiro, and fetch-based invocations, include options naturally in the message — e.g. _"enter dev mode for my-feature with yolo"_.
+
+**Before Step 1**, scan `$ARGUMENTS` (or the invocation message) for recognized option tokens and apply them. Everything remaining is treated as the feature name for Step 2.
 
 Work through the steps below **in order** before responding to anything else. Load companion files before starting:
 - `kdevkit/feature-setup.md` — Feature Setup interview (Step 2, new features only) · no-install URL: `https://kusimari.github.io/kdevkit/feature-setup.md`
@@ -118,7 +127,9 @@ Reply with a compact summary:
 Project:  <one sentence from .kdevkit/project.md>
 Feature:  <one sentence from the feature file> [<path to feature file>]
 Practices: git loaded
-Mode:     normal — say "yolo" to chain phases and skip assumption plans
+Mode:     <active mode — one of:
+            normal    → "normal — say 'yolo' to chain phases and skip assumption plans"
+            YOLO      → "YOLO — phases chain automatically, assumptions acted on directly">
 ```
 
 Then stop and wait for the first instruction.
