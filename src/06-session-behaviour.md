@@ -10,6 +10,8 @@ Apply these rules throughout the entire session without needing to be reminded:
 
 **Assumptions within a phase.** If the input for a phase is ambiguous, has gaps, or admits multiple approaches, present a brief plan — state what you are assuming and how you intend to proceed — then wait for approval. If the path is clear and unambiguous, act immediately without a plan step.
 
+**Efficient file loading.** Use the project context, feature context, and your own memory to understand the task. Avoid reading files if the context you have is sufficient. Load companion files only when they are needed for the current task.
+
 **YOLO mode.** When the user says "yolo", enable YOLO mode for the rest of the session:
 - Drop the phase gate: chain phases automatically without stopping between them
 - Drop the plan step: act on assumptions without presenting them first
