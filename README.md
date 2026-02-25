@@ -90,6 +90,7 @@ If the GitHub Pages URL is blocked (e.g. Claude Code CLI sandbox):
 
 ```
 Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md and follow those instructions for feature: [feature-name]
+Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md and follow those instructions for feature: [feature-name] with yolo
 ```
 
 **claude.ai Projects** — add the devkit once, use it in every chat:
