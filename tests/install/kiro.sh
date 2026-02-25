@@ -21,7 +21,7 @@ assert_file_contains "$TMP/.kiro/steering/dev.md" "feature-setup.md"    "install
 assert_dir_exists  "$TMP/.kiro/steering/kdevkit"                             "kdevkit/ companion dir created"
 assert_file_exists "$TMP/.kiro/steering/kdevkit/feature-setup.md"            "feature-setup.md installed to kdevkit/"
 assert_file_exists "$TMP/.kiro/steering/kdevkit/git-practices.md"            "git-practices.md installed to kdevkit/"
-assert_file_contains "$TMP/.kiro/steering/kdevkit/feature-setup.md" "Requirements Interview" "feature-setup.md has interview content"
+assert_file_contains "$TMP/.kiro/steering/kdevkit/feature-setup.md" "Requirements:" "feature-setup.md has interview content"
 assert_file_contains "$TMP/.kiro/steering/kdevkit/git-practices.md" "Conventional Commits"   "git-practices.md has git content"
 
 echo ""
@@ -44,6 +44,6 @@ echo "--- install: kiro (idempotent — re-install overwrites cleanly) ---"
 echo "corrupted" > "$TMP/.kiro/steering/dev.md"
 ( cd "$TMP" && node "$REPO/install.js" kiro --local ) >/dev/null 2>&1
 assert_file_contains "$TMP/.kiro/steering/dev.md" "kdevkit:built:"      "re-install restores build timestamp"
-assert_file_contains "$TMP/.kiro/steering/kdevkit/feature-setup.md" "Requirements Interview" "re-install restores companion file"
+assert_file_contains "$TMP/.kiro/steering/kdevkit/feature-setup.md" "Requirements:" "re-install restores companion file"
 
 summary

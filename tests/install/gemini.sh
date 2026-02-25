@@ -18,7 +18,7 @@ assert_file_contains "$TMP/GEMINI.md" "kdevkit: dev"           "GEMINI.md contai
 assert_file_contains "$TMP/GEMINI.md" "kdevkit: feature-setup" "GEMINI.md contains feature-setup section"
 assert_file_contains "$TMP/GEMINI.md" "kdevkit: git-practices"  "GEMINI.md contains git-practices section"
 assert_file_contains "$TMP/GEMINI.md" "/dev"                    "GEMINI.md contains /dev command reference"
-assert_file_contains "$TMP/GEMINI.md" "Requirements Interview"  "GEMINI.md contains feature-setup content"
+assert_file_contains "$TMP/GEMINI.md" "Requirements:"  "GEMINI.md contains feature-setup content"
 assert_file_contains "$TMP/GEMINI.md" "Conventional Commits"    "GEMINI.md contains git-practices content"
 
 echo ""

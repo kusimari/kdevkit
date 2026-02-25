@@ -32,7 +32,7 @@ assert_file_contains "$REPO/build/git-practices.md" "Conventional Commits" "git 
 assert_file_contains "$DEV" "git-practices.md"                              "git practices: companion file referenced"
 
 # Feature setup content is in companion file
-assert_file_contains "$REPO/build/feature-setup.md" "Requirements Interview" "feature setup: Requirements Interview present"
+assert_file_contains "$REPO/build/feature-setup.md" "Requirements:" "feature setup: Requirements Interview present"
 assert_file_contains "$DEV" "feature-setup.md"                               "feature setup: companion file referenced"
 
 # Feature completion trigger

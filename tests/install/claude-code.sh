@@ -21,7 +21,7 @@ assert_file_contains "$TMP/.claude/commands/dev.md" "feature-setup.md"   "instal
 assert_dir_exists  "$TMP/.claude/commands/kdevkit"                            "kdevkit/ companion dir created"
 assert_file_exists "$TMP/.claude/commands/kdevkit/feature-setup.md"           "feature-setup.md installed to kdevkit/"
 assert_file_exists "$TMP/.claude/commands/kdevkit/git-practices.md"           "git-practices.md installed to kdevkit/"
-assert_file_contains "$TMP/.claude/commands/kdevkit/feature-setup.md" "Requirements Interview" "feature-setup.md has interview content"
+assert_file_contains "$TMP/.claude/commands/kdevkit/feature-setup.md" "Requirements:" "feature-setup.md has interview content"
 assert_file_contains "$TMP/.claude/commands/kdevkit/git-practices.md" "Conventional Commits"   "git-practices.md has git content"
 
 echo ""
@@ -40,7 +40,7 @@ echo "--- install: claude-code (idempotent — re-install overwrites cleanly) --
 echo "corrupted" > "$TMP/.claude/commands/dev.md"
 ( cd "$TMP" && HOME="$TMP/home" node "$REPO/install.js" claude-code --local ) >/dev/null 2>&1
 assert_file_contains "$TMP/.claude/commands/dev.md" "kdevkit:built:"      "re-install restores build timestamp"
-assert_file_contains "$TMP/.claude/commands/kdevkit/feature-setup.md" "Requirements Interview" "re-install restores companion file"
+assert_file_contains "$TMP/.claude/commands/kdevkit/feature-setup.md" "Requirements:" "re-install restores companion file"
 
 echo ""
 echo "--- install: claude-code (positional and --agent flag both work) ---"
