@@ -2,14 +2,16 @@
 
 Before doing anything else, check whether kdevkit is up to date. This step is silent unless an update is found.
 
-1.  **Find the build timestamp** — look for `<!-- kdevkit:built:{TIMESTAMP} -->` at the top of this file.
+1.  **Find the build timestamp** — look for `<!-- kdevkit:built:{TIMESTAMP} -->` in the first 10 lines of this file (it may appear after YAML frontmatter).
     If not found, skip this step entirely and continue to Step 1.
 
 2.  **Find the install source** — look for `<!-- kdevkit:source:{SOURCE} -->` in this file.
     Supported values:
-    - `github-pages` — fetch `https://kusimari.github.io/kdevkit/dev.md`
-    - `raw` — fetch `https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md`
-    - `local` — read `build/dev.md` relative to the project root (skip if the file is missing)
+    - `github-pages` — fetch `https://kusimari.github.io/kdevkit/agent.md` (agent) or `dev.md` (command)
+    - `raw` — fetch `https://raw.githubusercontent.com/kusimari/kdevkit/main/build/agent.md` (agent) or `build/dev.md` (command)
+    - `local` — read `build/agent.md` or `build/dev.md` relative to the project root (skip if the file is missing)
+
+    To determine which file to fetch, check whether this file has YAML frontmatter (starts with `---`). If yes, fetch `agent.md`; otherwise fetch `dev.md`.
 
     If the source comment is not found, skip this step.
 
@@ -27,14 +29,16 @@ Before doing anything else, check whether kdevkit is up to date. This step is si
        line immediately after the new `<!-- kdevkit:built:... -->` line (the remote content will not have it).
     b. **IMPORTANT**: The following are default paths. Before writing, verify that the target file or directory exists. If it does not, ask the user for the correct path.
        Overwrite `dev.md` with the updated content:
-       - Claude Code: `.claude/commands/dev.md` (or `~/.claude/commands/dev.md` if globally installed)
+       - Claude Code (agent): `.claude/agents/dev.md` (or `~/.claude/agents/dev.md` if globally installed)
+       - Claude Code (command): `.claude/commands/dev.md` (or `~/.claude/commands/dev.md` if globally installed)
        - Kiro: `.kiro/steering/dev.md`
        - Gemini: replace only the `## kdevkit: dev` section in `GEMINI.md` (or `~/.gemini/GEMINI.md`)
     b2. Update companion files from the same source. **Verify paths before writing**:
-        - `github-pages` → fetch `https://kusimari.github.io/kdevkit/feature-setup.md` and `.../git-practices.md`
-        - `raw` → fetch `https://raw.githubusercontent.com/kusimari/kdevkit/main/build/feature-setup.md` and `.../git-practices.md`
-        - `local` → read `build/feature-setup.md` and `build/git-practices.md`
-        For Claude Code and Kiro: write each to the `kdevkit/` subdirectory alongside `dev.md`.
+        - `github-pages` → fetch `https://kusimari.github.io/kdevkit/feature-setup.md`, `.../git-practices.md`, and (agent only) `.../install-agent.md`
+        - `raw` → fetch the same files under `https://raw.githubusercontent.com/kusimari/kdevkit/main/build/`
+        - `local` → read from `build/`
+        For Claude Code (agent): write `install-agent.md` alongside `dev.md` in `.claude/agents/`; write `feature-setup.md` and `git-practices.md` to the `kdevkit/` subdirectory alongside `dev.md`.
+        For Claude Code (command) and Kiro: write each to the `kdevkit/` subdirectory alongside `dev.md`.
         For Gemini: replace the `## kdevkit: feature-setup` and `## kdevkit: git-practices` sections.
         If any companion fetch fails, note it but continue.
     c. Diff the old and new content to identify which steps changed.

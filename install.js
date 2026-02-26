@@ -9,6 +9,7 @@ const https = require('https');
 const PAGES_BASE = 'https://kusimari.github.io/kdevkit';
 const PAGES_URL = `${PAGES_BASE}/dev.md`;
 const COMPANION_FILES = ['feature-setup.md', 'git-practices.md'];
+const AGENT_COMPANION_FILES = ['install-agent.md', 'feature-setup.md', 'git-practices.md'];
 
 // ---------------------------------------------------------------------------
 // Argument parsing
@@ -22,20 +23,22 @@ Usage:
   node install.js <agent> [--local] [--global]
 
 Agents:
-  claude-code   Claude Code  (.claude/commands/ or ~/.claude/commands/)
-  gemini        Gemini CLI   (GEMINI.md or ~/.gemini/GEMINI.md)
-  kiro          Amazon Kiro  (.kiro/steering/)
+  claude-code-agent  Claude Code / Claude Code on the web (.claude/agents/)
+  claude-code        Claude Code slash command (.claude/commands/) [legacy]
+  gemini             Gemini CLI   (GEMINI.md or ~/.gemini/GEMINI.md)
+  kiro               Amazon Kiro  (.kiro/steering/)
 
 Flags:
-  --local       Use local build/dev.md instead of fetching from GitHub Pages
+  --local       Use local build/dev.md (or build/agent.md) instead of fetching from GitHub Pages
                 (requires running 'npm run build' first)
   --global      Install at user scope rather than project scope
-                (Claude Code and Gemini only; Kiro is project-only)
+                (claude-code-agent and claude-code: ~/.claude/; Gemini only; Kiro is project-only)
 
 Examples:
-  npx github:kusimari/kdevkit claude-code
+  npx github:kusimari/kdevkit claude-code-agent
+  npx github:kusimari/kdevkit claude-code-agent --global
   npx github:kusimari/kdevkit gemini --global
-  node install.js claude-code --local
+  node install.js claude-code-agent --local
 `);
 }
 
@@ -141,6 +144,10 @@ async function getDevMd(opts) {
   return getFile(opts, 'dev.md');
 }
 
+async function getAgentMd(opts) {
+  return getFile(opts, 'agent.md');
+}
+
 async function getCompanionFiles(opts) {
   const files = {};
   for (const filename of COMPANION_FILES) {
@@ -149,9 +156,37 @@ async function getCompanionFiles(opts) {
   return files;
 }
 
+async function getAgentCompanionFiles(opts) {
+  const files = {};
+  for (const filename of AGENT_COMPANION_FILES) {
+    files[filename] = await getFile(opts, filename);
+  }
+  return files;
+}
+
 // ---------------------------------------------------------------------------
 // Agent installers
 // ---------------------------------------------------------------------------
+
+function installClaudeCodeAgent(agentMd, agentCompanionFiles, opts) {
+  const scope = opts.global ? 'global' : 'project';
+  const targetDir = opts.global
+    ? path.join(os.homedir(), '.claude', 'agents')
+    : path.join(process.cwd(), '.claude', 'agents');
+  const source = opts.local ? 'local' : 'github-pages';
+  writeFile(path.join(targetDir, 'dev.md'), injectSource(agentMd, source));
+  // install-agent.md goes directly in agents/ (not in kdevkit/ subdirectory)
+  const { 'install-agent.md': installAgent, ...kdevkitFiles } = agentCompanionFiles;
+  if (installAgent) {
+    writeFile(path.join(targetDir, 'install-agent.md'), installAgent);
+  }
+  for (const [filename, content] of Object.entries(kdevkitFiles)) {
+    writeFile(path.join(targetDir, 'kdevkit', filename), content);
+  }
+  console.log(`\nClaude Code (agent): dev agent installed (scope: ${scope})`);
+  console.log(`Agents directory: ${targetDir}`);
+  console.log('Tell Claude to "use the dev agent" or "enter dev mode for <feature>".');
+}
 
 function installClaudeCode(devMd, companionFiles, opts) {
   const scope = opts.global ? 'global' : 'project';
@@ -209,14 +244,19 @@ async function main() {
   console.log(`Installing kdevkit dev for: ${opts.agent}${scopeLabel}${sourceLabel}`);
   console.log('');
 
-  const devMd = await getDevMd(opts);
-  const companionFiles = await getCompanionFiles(opts);
-
-  switch (opts.agent) {
-    case 'claude-code': installClaudeCode(devMd, companionFiles, opts); break;
-    case 'gemini':      installGemini(devMd, companionFiles, opts);     break;
-    case 'kiro':        installKiro(devMd, companionFiles, opts);       break;
-    default: die(`unknown agent '${opts.agent}'.\nAvailable: claude-code, gemini, kiro`);
+  if (opts.agent === 'claude-code-agent') {
+    const agentMd = await getAgentMd(opts);
+    const agentCompanionFiles = await getAgentCompanionFiles(opts);
+    installClaudeCodeAgent(agentMd, agentCompanionFiles, opts);
+  } else {
+    const devMd = await getDevMd(opts);
+    const companionFiles = await getCompanionFiles(opts);
+    switch (opts.agent) {
+      case 'claude-code': installClaudeCode(devMd, companionFiles, opts); break;
+      case 'gemini':      installGemini(devMd, companionFiles, opts);     break;
+      case 'kiro':        installKiro(devMd, companionFiles, opts);       break;
+      default: die(`unknown agent '${opts.agent}'.\nAvailable: claude-code-agent, claude-code, gemini, kiro`);
+    }
   }
 }
 
