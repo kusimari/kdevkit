@@ -5,36 +5,39 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 source "$REPO/tests/helpers.sh"
 
+FILE="$REPO/build/kdevkit-dev.md"
+
 echo "--- build: kdevkit-dev.md format ---"
 
-assert_file_exists "$REPO/build/kdevkit-dev.md" "build/kdevkit-dev.md exists"
+assert_file_exists "$FILE" "build/kdevkit-dev.md exists"
 
-FIRST_LINE=$(head -1 "$REPO/build/kdevkit-dev.md")
+FIRST_LINE=$(head -1 "$FILE")
 if [[ "$FIRST_LINE" == "---" ]]; then
-  pass "file starts with --- (YAML frontmatter)"
+  pass "starts with YAML frontmatter"
 else
-  fail "file must start with --- (YAML frontmatter), got: $FIRST_LINE"
+  fail "must start with ---, got: $FIRST_LINE"
 fi
 
-assert_file_contains "$REPO/build/kdevkit-dev.md" "name: kdevkit-dev"  "has name: kdevkit-dev"
-assert_file_contains "$REPO/build/kdevkit-dev.md" "description:"       "has description field"
-assert_file_contains "$REPO/build/kdevkit-dev.md" "tools:"             "has tools field"
+assert_file_contains "$FILE" "name: kdevkit-dev"  "has name: kdevkit-dev"
+assert_file_contains "$FILE" "description:"       "has description"
+assert_file_contains "$FILE" "tools:"             "has tools"
 
 echo ""
 echo "--- build: kdevkit-dev.md contents ---"
 
-assert_file_contains "$REPO/build/kdevkit-dev.md" "Step 1"             "has project context step"
-assert_file_contains "$REPO/build/kdevkit-dev.md" "Step 2"             "has feature context step"
-assert_file_contains "$REPO/build/kdevkit-dev.md" "yolo"               "has yolo mode"
-assert_file_contains "$REPO/build/kdevkit-dev.md" "feature-setup.md"  "references feature-setup companion"
-assert_file_contains "$REPO/build/kdevkit-dev.md" "git-practices.md"  "references git-practices companion"
+assert_file_contains "$FILE" "Step 1"               "has Step 1 (project context)"
+assert_file_contains "$FILE" "Step 2"               "has Step 2 (feature context)"
+assert_file_contains "$FILE" "Feature Setup"        "has Feature Setup section (inlined)"
+assert_file_contains "$FILE" "Conventional Commits" "has git practices (inlined)"
+assert_file_contains "$FILE" "yolo"                 "has yolo mode"
 
 echo ""
-echo "--- build: companion files ---"
+echo "--- build: self-contained (no external references) ---"
 
-assert_file_exists "$REPO/build/feature-setup.md"  "build/feature-setup.md exists"
-assert_file_exists "$REPO/build/git-practices.md"  "build/git-practices.md exists"
-assert_file_contains "$REPO/build/feature-setup.md" "Requirements:"        "feature-setup.md has content"
-assert_file_contains "$REPO/build/git-practices.md" "Conventional Commits" "git-practices.md has content"
+if grep -qF "raw.githubusercontent.com" "$FILE" || grep -qF "github.com" "$FILE"; then
+  fail "agent file must not contain GitHub URLs"
+else
+  pass "no GitHub URLs in agent file"
+fi
 
 summary

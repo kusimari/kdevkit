@@ -10,7 +10,3 @@ Mode:     normal  (or: YOLO if yolo is active)
 ```
 
 Then stop and wait for the first instruction.
-
----
-
-*Managed by [kdevkit](https://github.com/kusimari/kdevkit). Context in `.kdevkit/`.*

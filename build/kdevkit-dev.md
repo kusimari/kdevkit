@@ -4,18 +4,11 @@ description: Structured dev mode for coding agents — loads project context, se
 tools: [Read, Write, Edit, Bash, Glob, Grep, WebFetch]
 ---
 
-# /dev — Enter Dev Mode
-
-Usage: `/dev [feature] [options]`
-
 Options (`yolo` is **off** by default): `yolo` — chain phases and skip assumption plans; `yolo off` — revert.
-Gemini/Kiro/fetch: include options in the message — e.g. _"enter dev mode for my-feature with yolo"_.
 
-**Before Step 1**, parse `$ARGUMENTS` (or the invocation message): extract recognized option tokens and apply them; the rest is the feature name for Step 2.
+**Before Step 1**, parse the invocation message: extract recognized option tokens and apply them; the rest is the feature name for Step 2.
 
-Work through the steps below **in order**. Load companion files before starting:
-- `kdevkit/feature-setup.md` — Feature Setup (Step 2, new features) · `https://raw.githubusercontent.com/kusimari/kdevkit/main/build/feature-setup.md`
-- `kdevkit/git-practices.md` — Git conventions (Step 3) · `https://raw.githubusercontent.com/kusimari/kdevkit/main/build/git-practices.md`
+Work through the steps below **in order**.
 
 ---
 
@@ -39,14 +32,97 @@ Determine the feature file to load:
 
 Then:
 - **File has content** → load it silently; note what is currently being built.
-- **File is missing or empty** → follow the Feature Setup process in `kdevkit/feature-setup.md` to create it.
+- **File is missing or empty** → follow the Feature Setup process below to create it.
   Do not continue to Step 3 until the file exists with real content.
+
+### Feature Setup
+
+When a feature file needs to be created, conduct a structured interview process to establish a clear understanding of the feature's requirements, design, testing strategy, and implementation plan.
+
+#### File Location
+
+Feature files reside in `.kdevkit/feature/` and are named after the feature (e.g., `user-auth` → `.kdevkit/feature/user-auth.md`). Names should be lowercase and hyphenated.
+
+#### Git Setup
+
+Before interviews, determine the user's preferred git setup (branch or worktree) and the base commit. If the current branch already matches the feature name, skip branch/worktree creation. Propose the `git checkout -b <feature-name> <commit-ish>` or `git worktree add <feature-name> -b <feature-name> <commit-ish>` command for user confirmation.
+
+#### Interview Process
+
+Use existing project context to inform the interview process and avoid starting from scratch. Run four interviews to define the feature:
+1.  **Requirements:** Understand the problem, user interaction, and success criteria.
+2.  **Design:** Define the technical approach, architecture, and component interactions.
+3.  **Testing:** Define the validation strategy, including test types and key scenarios.
+4.  **Implementation:** Plan the development approach, task breakdown, and risk mitigation.
+
+#### Output Format
+
+After completing interviews, create the feature file at `.kdevkit/feature/<feature-name>.md` following a specified template (which includes sections for Git Setup, Feature Brief, Requirements, Design, Test Strategy, Implementation Plan, Session Log, and Decision Log). This template serves as a decision record and agent instructions.
 
 ---
 
 ## Step 3 — Git practices
 
-Apply the git conventions from `kdevkit/git-practices.md` (loaded above) for the full duration of this session.
+Apply these git conventions for the full duration of this session:
+
+### Branches
+
+Pattern: `<type>/<short-description>`
+
+Types: `feat` · `fix` · `chore` · `docs` · `refactor` · `test`
+
+Examples:
+- `feat/user-auth`
+- `fix/null-pointer-on-login`
+- `chore/update-deps`
+
+### Commits
+
+Format: Conventional Commits — `type(scope): subject`
+
+Rules:
+- Imperative mood, lowercase, no trailing period
+- Subject line ≤ 72 characters
+- Each commit must leave the repo in a working state — no broken builds mid-branch
+- If a commit needs a body, the body explains *why*, not *what* (the diff shows what)
+
+Examples:
+- `feat(auth): add JWT refresh token rotation`
+- `fix(api): handle empty response from upstream`
+- `chore: bump Node to 22`
+
+### Scope
+
+- Commits and config changes stay **local to this project** — never modify global git config
+- Do not write to `~/.gitconfig`, `~/.ssh/`, or any path outside the project root
+- If a git hook or script tries to write outside the project, flag it before running
+
+### Pull Requests
+
+- PR title follows the same `type(scope): subject` format
+- PR body: explain *why* the change is needed and what approach was chosen
+- Keep PRs small; one concern per PR
+- Squash merge; the squash commit message must match the PR title format
+
+### Commit discipline
+
+- **Commits are save points** — commit whenever a coherent unit of work is done; do not wait until the whole feature is complete
+- Every commit must leave the repo in a working state (tests pass, build succeeds)
+- Push to the feature branch freely; pushing is not the same as opening a PR
+
+### PR gate
+
+A PR is ready when, and only when, **`npm run build` passes locally** (or the project's equivalent build-and-test command). Do not open a PR if the build is broken or tests are red.
+
+- Run the full build+test suite immediately before opening a PR
+- If CI is configured, it runs only on protected branches (e.g. `main`) — feature branches are the developer's responsibility
+- CI triggers only on changes to source and build files, not test-only changes
+
+### Hygiene
+
+- Do not commit commented-out code, debug prints, or temporary test files
+- Do not commit secrets, credentials, or environment-specific values
+- If `.gitignore` needs updating, include it in the same commit that adds the ignored file
 
 ---
 
@@ -85,7 +161,3 @@ Mode:     normal  (or: YOLO if yolo is active)
 ```
 
 Then stop and wait for the first instruction.
-
----
-
-*Managed by [kdevkit](https://github.com/kusimari/kdevkit). Context in `.kdevkit/`.*

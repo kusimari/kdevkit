@@ -13,21 +13,22 @@ kdevkit installs a Claude agent (`kdevkit-dev`) that, when invoked, walks throug
 3. Applies git conventions (branch naming, commit format, PR rules)
 4. Confirms the plan before starting work
 
-This keeps sessions consistent and context-rich, regardless of whether you're in Claude Code CLI or Claude Code on the web.
-
 ---
 
 ## In CLI (Claude Code)
 
 ### Install
 
-Tell Claude to install the agent:
+```bash
+curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md \
+  -o .claude/agents/kdevkit-dev.md
+```
+
+Or tell Claude to do it:
 
 ```
-Install agent from https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md
+Download https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md to .claude/agents/kdevkit-dev.md
 ```
-
-Claude will fetch the file and write it to `.claude/agents/kdevkit-dev.md`.
 
 ### Invoke
 
@@ -35,22 +36,12 @@ Claude will fetch the file and write it to `.claude/agents/kdevkit-dev.md`.
 use the kdevkit-dev agent for feature: <feature-name>
 ```
 
-Add `yolo` to chain phases automatically without confirmation stops:
-
-```
-use the kdevkit-dev agent for feature: <feature-name> with yolo
-```
-
 ---
 
 ## In web or ephemeral systems
-
-### Install and invoke
 
 Tell Claude at the start of a session:
 
 ```
 Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md and run the kdevkit-dev agent for feature: <feature-name>
 ```
-
-Claude will load the agent content directly and begin the structured workflow.

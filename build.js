@@ -14,12 +14,11 @@ const MANIFEST = {
     '01-header.md',
     '02-project-context.md',
     '03-feature-context.md',
-    '05-git-practices-stub.md',
+    '04-feature-setup.md',
+    '05-git-practices.md',
     '06-session-behaviour.md',
     '07-confirm.md',
   ],
-  'feature-setup.md': ['04-feature-setup-reference.md'],
-  'git-practices.md': ['05-git-practices-reference.md'],
 };
 
 fs.mkdirSync(BUILD_DIR, { recursive: true });
