@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Run all test suites and report overall results.
 # Usage: bash tests/run.sh [suite-glob]
-#   bash tests/run.sh                       # run everything
-#   bash tests/run.sh tests/install/*.sh    # run only install suites
+#   bash tests/run.sh                   # run everything
+#   bash tests/run.sh tests/build.sh    # run a specific suite
 
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
@@ -14,12 +14,7 @@ NC='\033[0m'
 
 if [[ $# -eq 0 ]]; then
   SUITES=(
-    "$REPO/tests/install/claude-code.sh"
-    "$REPO/tests/install/gemini.sh"
-    "$REPO/tests/install/kiro.sh"
-    "$REPO/tests/dev-mode/prompt.sh"
-    "$REPO/tests/dev-mode/references.sh"
-    "$REPO/tests/agent/dev-command.sh"
+    "$REPO/tests/build.sh"
   )
 else
   SUITES=("$@")
