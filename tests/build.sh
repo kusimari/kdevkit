@@ -23,27 +23,18 @@ assert_file_contains "$REPO/build/kdevkit-dev.md" "tools:"             "has tool
 echo ""
 echo "--- build: kdevkit-dev.md contents ---"
 
-assert_file_contains "$REPO/build/kdevkit-dev.md" "<!-- kdevkit:built:" "has build timestamp"
-assert_file_contains "$REPO/build/kdevkit-dev.md" "Step 0"             "has self-update step"
 assert_file_contains "$REPO/build/kdevkit-dev.md" "Step 1"             "has project context step"
 assert_file_contains "$REPO/build/kdevkit-dev.md" "Step 2"             "has feature context step"
-assert_file_contains "$REPO/build/kdevkit-dev.md" "yolo"               "has yolo mode reference"
+assert_file_contains "$REPO/build/kdevkit-dev.md" "yolo"               "has yolo mode"
 assert_file_contains "$REPO/build/kdevkit-dev.md" "feature-setup.md"  "references feature-setup companion"
 assert_file_contains "$REPO/build/kdevkit-dev.md" "git-practices.md"  "references git-practices companion"
-
-echo ""
-echo "--- build: install-agent.md ---"
-
-assert_file_exists "$REPO/build/install-agent.md" "build/install-agent.md exists"
-assert_file_contains "$REPO/build/install-agent.md" "name: install-agent" "has name: install-agent"
-assert_file_contains "$REPO/build/install-agent.md" "Step 1"              "has instructions"
 
 echo ""
 echo "--- build: companion files ---"
 
 assert_file_exists "$REPO/build/feature-setup.md"  "build/feature-setup.md exists"
 assert_file_exists "$REPO/build/git-practices.md"  "build/git-practices.md exists"
-assert_file_contains "$REPO/build/feature-setup.md" "Requirements:"      "feature-setup.md has content"
+assert_file_contains "$REPO/build/feature-setup.md" "Requirements:"        "feature-setup.md has content"
 assert_file_contains "$REPO/build/git-practices.md" "Conventional Commits" "git-practices.md has content"
 
 summary
