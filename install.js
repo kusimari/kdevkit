@@ -6,9 +6,8 @@ const path = require('path');
 const os = require('os');
 const https = require('https');
 
-const PAGES_BASE = 'https://kusimari.github.io/kdevkit';
-const PAGES_URL = `${PAGES_BASE}/dev.md`;
-const COMPANION_FILES = ['feature-setup.md', 'git-practices.md'];
+const RAW_BASE = 'https://raw.githubusercontent.com/kusimari/kdevkit/main/build';
+const AGENT_COMPANION_FILES = ['install-agent.md', 'feature-setup.md', 'git-practices.md'];
 
 // ---------------------------------------------------------------------------
 // Argument parsing
@@ -18,42 +17,31 @@ function printHelp() {
   console.log(`kdevkit installer
 
 Usage:
-  npx github:kusimari/kdevkit <agent> [--global]
-  node install.js <agent> [--local] [--global]
-
-Agents:
-  claude-code   Claude Code  (.claude/commands/ or ~/.claude/commands/)
-  gemini        Gemini CLI   (GEMINI.md or ~/.gemini/GEMINI.md)
-  kiro          Amazon Kiro  (.kiro/steering/)
+  npx github:kusimari/kdevkit [--global]
+  node install.js [--local] [--global]
 
 Flags:
-  --local       Use local build/dev.md instead of fetching from GitHub Pages
+  --local       Use local build/kdevkit-dev.md instead of fetching from GitHub
                 (requires running 'npm run build' first)
-  --global      Install at user scope rather than project scope
-                (Claude Code and Gemini only; Kiro is project-only)
+  --global      Install at user scope (~/.claude/agents/) rather than project scope
 
 Examples:
-  npx github:kusimari/kdevkit claude-code
-  npx github:kusimari/kdevkit gemini --global
-  node install.js claude-code --local
+  npx github:kusimari/kdevkit
+  npx github:kusimari/kdevkit --global
+  node install.js --local
 `);
 }
 
 function parseArgs(argv) {
-  const opts = { agent: null, global: false, local: false };
+  const opts = { global: false, local: false };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg === '--agent') {
-      if (!argv[i + 1]) die('--agent requires a value');
-      opts.agent = argv[++i];
-    } else if (arg === '--global') {
+    if (arg === '--global') {
       opts.global = true;
     } else if (arg === '--local') {
       opts.local = true;
     } else if (arg === '--help' || arg === '-h') {
       printHelp(); process.exit(0);
-    } else if (!arg.startsWith('-')) {
-      opts.agent = arg;
     } else {
       die(`Unknown option: ${arg}`);
     }
@@ -77,30 +65,28 @@ function writeFile(dest, content) {
   console.log(`  installed: ${dest}`);
 }
 
-function appendSection(targetFile, heading, content) {
-  const existing = fs.existsSync(targetFile) ? fs.readFileSync(targetFile, 'utf8') : '';
-  if (existing.split('\n').some(line => line === heading)) {
-    console.log(`  skipped (already present): ${heading}`);
-    return false;
-  }
-  fs.mkdirSync(path.dirname(targetFile), { recursive: true });
-  fs.appendFileSync(targetFile, `\n${heading}\n\n${content}`);
-  console.log(`  appended: ${heading} → ${path.basename(targetFile)}`);
-  return true;
-}
-
 // ---------------------------------------------------------------------------
 // Metadata injection
 // ---------------------------------------------------------------------------
 
-function injectSource(devMd, source) {
-  // Insert <!-- kdevkit:source:... --> on the line immediately after the
-  // <!-- kdevkit:built:... --> timestamp comment (first line).
-  const newline = devMd.indexOf('\n');
-  if (newline === -1) return `<!-- kdevkit:source:${source} -->\n` + devMd;
-  return devMd.slice(0, newline + 1) +
+function injectSource(content, source) {
+  // Insert <!-- kdevkit:source:... --> immediately after the <!-- kdevkit:built:... --> line.
+  // This works correctly for agent files where the built comment follows YAML frontmatter.
+  const builtIdx = content.indexOf('<!-- kdevkit:built:');
+  if (builtIdx !== -1) {
+    const newlineAfterBuilt = content.indexOf('\n', builtIdx);
+    if (newlineAfterBuilt !== -1) {
+      return content.slice(0, newlineAfterBuilt + 1) +
+        `<!-- kdevkit:source:${source} -->\n` +
+        content.slice(newlineAfterBuilt + 1);
+    }
+  }
+  // Fallback: insert after first line
+  const newline = content.indexOf('\n');
+  if (newline === -1) return `<!-- kdevkit:source:${source} -->\n` + content;
+  return content.slice(0, newline + 1) +
     `<!-- kdevkit:source:${source} -->\n` +
-    devMd.slice(newline + 1);
+    content.slice(newline + 1);
 }
 
 // ---------------------------------------------------------------------------
@@ -132,68 +118,41 @@ async function getFile(opts, filename) {
     }
     return fs.readFileSync(localPath, 'utf8');
   }
-  const url = `${PAGES_BASE}/${filename}`;
+  const url = `${RAW_BASE}/${filename}`;
   console.log(`  fetching: ${url}`);
   return fetchUrl(url);
 }
 
-async function getDevMd(opts) {
-  return getFile(opts, 'dev.md');
-}
-
-async function getCompanionFiles(opts) {
+async function getAgentCompanionFiles(opts) {
   const files = {};
-  for (const filename of COMPANION_FILES) {
+  for (const filename of AGENT_COMPANION_FILES) {
     files[filename] = await getFile(opts, filename);
   }
   return files;
 }
 
 // ---------------------------------------------------------------------------
-// Agent installers
+// Installer
 // ---------------------------------------------------------------------------
 
-function installClaudeCode(devMd, companionFiles, opts) {
+function installClaudeCodeAgent(agentMd, agentCompanionFiles, opts) {
   const scope = opts.global ? 'global' : 'project';
   const targetDir = opts.global
-    ? path.join(os.homedir(), '.claude', 'commands')
-    : path.join(process.cwd(), '.claude', 'commands');
-  const source = opts.local ? 'local' : 'github-pages';
-  writeFile(path.join(targetDir, 'dev.md'), injectSource(devMd, source));
-  for (const [filename, content] of Object.entries(companionFiles)) {
+    ? path.join(os.homedir(), '.claude', 'agents')
+    : path.join(process.cwd(), '.claude', 'agents');
+  const source = opts.local ? 'local' : 'raw';
+  writeFile(path.join(targetDir, 'kdevkit-dev.md'), injectSource(agentMd, source));
+  // install-agent.md goes directly in agents/ alongside kdevkit-dev.md
+  const { 'install-agent.md': installAgent, ...kdevkitFiles } = agentCompanionFiles;
+  if (installAgent) {
+    writeFile(path.join(targetDir, 'install-agent.md'), installAgent);
+  }
+  for (const [filename, content] of Object.entries(kdevkitFiles)) {
     writeFile(path.join(targetDir, 'kdevkit', filename), content);
   }
-  console.log(`\nClaude Code: dev command installed (scope: ${scope})`);
-  console.log('Invoke with /dev [feature]');
-}
-
-function installGemini(devMd, companionFiles, opts) {
-  const scope = opts.global ? 'global' : 'project';
-  const targetFile = opts.global
-    ? path.join(os.homedir(), '.gemini', 'GEMINI.md')
-    : path.join(process.cwd(), 'GEMINI.md');
-  const source = opts.local ? 'local' : 'github-pages';
-  appendSection(targetFile, '## kdevkit: dev', injectSource(devMd, source));
-  for (const [filename, content] of Object.entries(companionFiles)) {
-    const sectionName = filename.replace('.md', '');
-    appendSection(targetFile, `## kdevkit: ${sectionName}`, content);
-  }
-  console.log(`\nGemini CLI: dev section in ${targetFile} (scope: ${scope})`);
-  console.log('Activate by asking the model to apply the kdevkit dev section.');
-}
-
-function installKiro(devMd, companionFiles, opts) {
-  if (opts.global) {
-    console.warn('Warning: Kiro does not support global steering files. Installing at project scope.');
-  }
-  const targetDir = path.join(process.cwd(), '.kiro', 'steering');
-  const source = opts.local ? 'local' : 'github-pages';
-  writeFile(path.join(targetDir, 'dev.md'), injectSource(devMd, source));
-  for (const [filename, content] of Object.entries(companionFiles)) {
-    writeFile(path.join(targetDir, 'kdevkit', filename), content);
-  }
-  console.log(`\nKiro: dev steering file installed → ${path.join(targetDir, 'dev.md')}`);
-  console.log('Active in every Kiro session for this project.');
+  console.log(`\nInstalled kdevkit-dev agent (scope: ${scope})`);
+  console.log(`Agents directory: ${targetDir}`);
+  console.log('Tell Claude: "use the kdevkit-dev agent for feature: <name>"');
 }
 
 // ---------------------------------------------------------------------------
@@ -202,22 +161,15 @@ function installKiro(devMd, companionFiles, opts) {
 
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
-  if (!opts.agent) { printHelp(); process.exit(1); }
 
   const scopeLabel = opts.global ? ' (global)' : ' (project)';
-  const sourceLabel = opts.local ? ' [local build]' : ' [GitHub Pages]';
-  console.log(`Installing kdevkit dev for: ${opts.agent}${scopeLabel}${sourceLabel}`);
+  const sourceLabel = opts.local ? ' [local build]' : ' [GitHub raw]';
+  console.log(`Installing kdevkit-dev agent${scopeLabel}${sourceLabel}`);
   console.log('');
 
-  const devMd = await getDevMd(opts);
-  const companionFiles = await getCompanionFiles(opts);
-
-  switch (opts.agent) {
-    case 'claude-code': installClaudeCode(devMd, companionFiles, opts); break;
-    case 'gemini':      installGemini(devMd, companionFiles, opts);     break;
-    case 'kiro':        installKiro(devMd, companionFiles, opts);       break;
-    default: die(`unknown agent '${opts.agent}'.\nAvailable: claude-code, gemini, kiro`);
-  }
+  const agentMd = await getFile(opts, 'kdevkit-dev.md');
+  const agentCompanionFiles = await getAgentCompanionFiles(opts);
+  installClaudeCodeAgent(agentMd, agentCompanionFiles, opts);
 }
 
 main().catch(err => { console.error(`Error: ${err.message}`); process.exit(1); });

@@ -1,123 +1,47 @@
 # kdevkit
 
-Dev practices as a slash command for Claude Code, Gemini CLI, and Amazon Kiro.
+A Claude agent that brings structured workflow to coding sessions — loads project context, manages feature files, and applies git conventions.
 
 ---
 
-## Install
+## What is this for?
 
-### 1. From GitHub
+kdevkit installs a Claude agent (`kdevkit-dev`) that, when invoked, walks through a structured process before any coding begins:
 
-```sh
-npx github:kusimari/kdevkit claude-code
-npx github:kusimari/kdevkit gemini
-npx github:kusimari/kdevkit kiro
-```
-
-Add `--global` to install at user scope instead of project scope (Claude Code and Gemini only):
-
-```sh
-npx github:kusimari/kdevkit claude-code --global
-```
-
-### 2. From a local clone
-
-Build first, then install from the local build (equivalent to the GitHub version):
-
-```sh
-git clone https://github.com/kusimari/kdevkit.git
-cd kdevkit
-npm run build
-node install.js claude-code --local
-node install.js gemini --local
-node install.js kiro --local
-```
-
-### 3. Cloud or no-install environments
-
-If you can't run npm (e.g. Claude Code web, claude.ai), skip install — see **Using dev mode without install** below.
+1. Loads project context from `.kdevkit/project.md`
+2. Loads or creates a feature file under `.kdevkit/feature/`
+3. Applies git conventions (branch naming, commit format, PR rules)
+4. Confirms the plan before starting work
 
 ---
 
-## Using dev mode
+## In CLI (Claude Code)
 
-Options are **off by default**. Pass them at invocation or say them at any point during the session.
+### Install
 
-| Option | Effect |
-|--------|--------|
-| `yolo` | Chain phases automatically and skip assumption plans |
-| `yolo off` | Return to normal gated mode |
-
-> **TODO:** Add a way to list all available parameters and their current values (e.g. `/dev params` or equivalent) as a separate capability in a future release.
-
-### If installed
-
-**Claude Code**
-
-```
-/dev [feature] [options]
+```bash
+curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md \
+  -o .claude/agents/kdevkit-dev.md
 ```
 
-```
-/dev my-feature           # normal mode (default)
-/dev my-feature yolo      # YOLO mode from the start
-```
-
-**Gemini CLI**
+Or tell Claude to do it:
 
 ```
-Apply the kdevkit dev section from GEMINI.md and enter dev mode for feature: my-feature
-Apply the kdevkit dev section from GEMINI.md and enter dev mode for feature: my-feature with yolo
+Download https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md to .claude/agents/kdevkit-dev.md
 ```
 
-**Amazon Kiro**
+### Invoke
 
 ```
-Enter dev mode for my-feature
-Enter dev mode for my-feature with yolo
+use the kdevkit-dev agent for feature: <feature-name>
 ```
-
-### Without install (Claude Code web, claude.ai)
-
-```
-Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions for feature: [feature-name]
-Fetch https://kusimari.github.io/kdevkit/dev.md and follow those instructions for feature: [feature-name] with yolo
-```
-
-Omit `for feature: ...` to be prompted interactively.
-
-If the GitHub Pages URL is blocked (e.g. Claude Code CLI sandbox):
-
-```
-Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md and follow those instructions for feature: [feature-name]
-Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/dev.md and follow those instructions for feature: [feature-name] with yolo
-```
-
-**claude.ai Projects** — add the devkit once, use it in every chat:
-
-1. Open your Project → **Add content** → paste the contents of [`dev.md`](https://kusimari.github.io/kdevkit/dev.md)
-2. Start sessions with: _"Enter dev mode for feature: [name]"_ or add `with yolo` to start in YOLO mode.
 
 ---
 
-## Development
+## In web or ephemeral systems
 
-```sh
-# Edit source files in src/, then build:
-npm run build          # generates build/dev.md
+Tell Claude at the start of a session:
 
-# Run all tests (requires build/dev.md):
-npm test
-
-# Run test subsets:
-npm run test:install
-npm run test:dev
-npm run test:agent
-
-# Install into the current project from local build:
-npm run install:claude
-npm run install:gemini
-npm run install:kiro
 ```
-
-**Source** lives in `src/` (numbered for sort order). `build.js` concatenates them into `build/dev.md`. On push to `main`, CI runs `npm run build` then `npm test`, and on success commits `build/dev.md` back to the repo and publishes `build/dev.md` + `install.js` to GitHub Pages. The `build/` directory is gitignored locally but `build/dev.md` is committed by CI so it's accessible via `raw.githubusercontent.com`.
+Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md and run the kdevkit-dev agent for feature: <feature-name>
+```
