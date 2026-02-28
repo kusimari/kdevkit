@@ -1,47 +1,47 @@
 # kdevkit
 
-A Claude agent that brings structured workflow to coding sessions — loads project context, manages feature files, and applies git conventions.
+Reusable instruction sets for coding agents. Tell your agent to fetch an instruction file and follow it — no installation needed.
 
 ---
 
-## What is this for?
+## Available instructions
 
-kdevkit installs a Claude agent (`kdevkit-dev`) that, when invoked, walks through a structured process before any coding begins:
+### Project & feature work
 
-1. Loads project context from `.kdevkit/project.md`
-2. Loads or creates a feature file under `.kdevkit/feature/`
-3. Applies git conventions (branch naming, commit format, PR rules)
-4. Confirms the plan before starting work
+**`kdevkit-feature-dev.md`** gives your coding agent a structured workflow for any feature:
 
----
-
-## In CLI (Claude Code)
-
-### Install
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md \
-  -o .claude/agents/kdevkit-dev.md
-```
-
-Or tell Claude to do it:
-
-```
-Download https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md to .claude/agents/kdevkit-dev.md
-```
-
-### Invoke
-
-```
-use the kdevkit-dev agent for feature: <feature-name>
-```
+- Loads project context from `.kdevkit/project.md` (creates it if missing)
+- Loads or creates a feature file under `.kdevkit/feature/` (runs a structured interview if new)
+- Applies git conventions for the session (branches, commits, PR rules)
+- Confirms the plan before starting work
 
 ---
 
-## In web or ephemeral systems
+## How to use
 
-Tell Claude at the start of a session:
+**Starting a new feature** — tell your coding agent:
 
 ```
-Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md and run the kdevkit-dev agent for feature: <feature-name>
+Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/kdevkit-feature-dev.md and follow it for feature: <feature-name>
 ```
+
+**Continuing an existing feature** — if you have already worked on a feature and a file exists at `.kdevkit/feature/<feature-name>.md`, tell your agent the same thing:
+
+```
+Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/kdevkit-feature-dev.md and follow it for feature: <feature-name>
+```
+
+The agent will detect the existing feature file and pick up where you left off, rather than running the setup interview again.
+
+---
+
+## How feature files work
+
+Feature files live in `.kdevkit/feature/` in your project. Each file captures:
+
+- What is being built and why
+- Requirements, design decisions, and test strategy
+- An implementation plan and task breakdown
+- A running log of decisions and progress
+
+The agent updates the file as work progresses so future sessions have full context.
