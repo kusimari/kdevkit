@@ -13,6 +13,7 @@ const MANIFEST = {
     'agent-header.md',
     '01-header.md',
     '02-project-context.md',
+    '02.5-persist-standing-rules.md',
     '03-feature-context.md',
     '04-feature-setup.md',
     '05-git-practices.md',
