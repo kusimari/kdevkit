@@ -1,47 +1,30 @@
 # kdevkit
 
-A Claude agent that brings structured workflow to coding sessions — loads project context, manages feature files, and applies git conventions.
+Reusable instruction sets for any coding agent.
 
 ---
 
-## What is this for?
-
-kdevkit installs a Claude agent (`kdevkit-dev`) that, when invoked, walks through a structured process before any coding begins:
-
-1. Loads project context from `.kdevkit/project.md`
-2. Loads or creates a feature file under `.kdevkit/feature/`
-3. Applies git conventions (branch naming, commit format, PR rules)
-4. Confirms the plan before starting work
-
----
-
-## In CLI (Claude Code)
-
-### Install
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md \
-  -o .claude/agents/kdevkit-dev.md
+Paste into your coding agent to get started:
 ```
-
-Or tell Claude to do it:
-
-```
-Download https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md to .claude/agents/kdevkit-dev.md
-```
-
-### Invoke
-
-```
-use the kdevkit-dev agent for feature: <feature-name>
+curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/README.md and follow the instructions
 ```
 
 ---
 
-## In web or ephemeral systems
+If you are a coding agent, follow the instructions below.
 
-Tell Claude at the start of a session:
+Select the file that matches what the user wants to achieve. Use `curl` to fetch it — do not use web fetch, as it will summarise the file rather than return its full contents.
 
-```
-Fetch https://raw.githubusercontent.com/kusimari/kdevkit/main/build/kdevkit-dev.md and run the kdevkit-dev agent for feature: <feature-name>
-```
+* `feature-dev.md`: structured workflow for feature work — loads project context, sets up or loads a feature file, applies git conventions, and confirms before starting; use this when the user wants to build or continue a feature
+
+  Paste into your coding agent:
+  ```
+  curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/feature-dev.md and follow it for feature: <feature-name>
+  ```
+
+* `echo.md`: echoes back whatever the user says — use this when the user wants their input repeated back to them
+
+  Paste into your coding agent:
+  ```
+  curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/echo.md and follow it
+  ```
