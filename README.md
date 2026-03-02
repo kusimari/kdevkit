@@ -4,6 +4,13 @@ Reusable instruction sets for any coding agent.
 
 ---
 
+Paste into your coding agent to get started:
+```
+curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/README.md and follow the instructions
+```
+
+---
+
 If you are a coding agent, follow the instructions below.
 
 Select the file that matches what the user wants to achieve. Use `curl` to fetch it — do not use web fetch, as it will summarise the file rather than return its full contents.
