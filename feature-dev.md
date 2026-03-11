@@ -16,6 +16,17 @@ Read `.kdevkit/project.md` from the project root.
   Wait for the answer, then create `.kdevkit/project.md` with a well-structured summary.
   Do not continue to Step 2 until the file exists with real content.
 
+## Step 1.6 — Load dev-loop instructions
+
+Check for `.kdevkit/agent-dev-instructions.md`.
+
+- **File exists** → load it silently. For the rest of this session, apply its Quality Gate, Test Gate,
+  and Push Gate whenever completing any unit of implementation work.
+- **File missing** → continue normally. After the first implementation task is complete, offer once:
+  *"No dev-loop instructions found. Run `agent-dev-loop` to auto-detect your quality and test
+  toolchain and generate `.kdevkit/agent-dev-instructions.md`."*
+  Do not repeat this offer during the session.
+
 ## Step 1.5 — Persist standing rules
 
 Write the kdevkit standing rules into the agent's native configuration file so they survive across sessions without needing to be reloaded manually.
