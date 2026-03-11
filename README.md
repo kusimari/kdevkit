@@ -22,6 +22,13 @@ Select the file that matches what the user wants to achieve. Use `curl` to fetch
   curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/feature-dev.md and follow it for feature: <feature-name>
   ```
 
+* `agent-dev-loop.md`: detects your project's code-quality, test, and build toolchain and creates `.kdevkit/agent-dev-instructions.md` so coding agents follow a consistent quality → test → push gate on every session; use this once per project to set up the dev loop, or when you want to update it
+
+  Paste into your coding agent:
+  ```
+  curl -fsSL https://raw.githubusercontent.com/kusimari/kdevkit/main/agent-dev-loop.md and follow it
+  ```
+
 * `echo.md`: echoes back whatever the user says — use this when the user wants their input repeated back to them
 
   Paste into your coding agent:
