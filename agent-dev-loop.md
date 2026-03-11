@@ -107,12 +107,14 @@ Detected toolchain for <project-name>:
 
 Omit rows for categories where nothing was detected.
 
-Then ask:
+Then ask these questions one at a time, waiting for each answer before asking the next:
+
 1. *"Are these commands correct? Reply with any overrides in the form `<category>: <new command>`, or say 'ok' to confirm."*
 2. *"Code review score threshold? (Default: 70 — enter a number 0–100, or press Enter for default.)"*
 3. *"Max test-retry cycles? (Default: 2 — enter a number, or press Enter for default.)"*
+4. *"Describe your testing and quality standards — e.g. mocking policy, coverage expectations, naming conventions, what must not happen in tests. These will be written into the instructions file as-is. (Press Enter to skip.)"*
 
-Wait for all three answers before proceeding.
+Wait for all four answers before proceeding.
 
 ---
 
@@ -187,10 +189,12 @@ Do not open a PR — that is the human reviewer's step.
 
 ## Testing Standards
 
-- Tests must not make real network calls; use mocks or stubs for external services.
-- Each test should verify one behaviour; avoid testing implementation details.
-- New code requires corresponding tests; do not ship untested code.
-- If the test suite has existing patterns (fixtures, factories, helpers), follow them.
+<if user provided testing standards in Step 4>
+<testing standards verbatim from user's Step 4 answer>
+</if>
+<if user skipped Step 4>
+_No testing standards defined. Add them here._
+</if>
 ```
 
 ---
